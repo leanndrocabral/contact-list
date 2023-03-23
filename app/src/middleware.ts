@@ -6,6 +6,7 @@ import { contact } from "./schemas/contacts.schema";
 export default async function middleware(request: NextRequest) {
   try {
     const { method, headers } = request;
+    
     const token = headers.get("authorization")?.split(" ")[1];
 
     switch (true) {
