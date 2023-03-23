@@ -10,7 +10,6 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
   const user = (await prisma.client.findFirst({ where: { email } })) as Client;
 
   if (user) {
-
     const passCompare = await compare(password, user.password);
 
     if (passCompare) {

@@ -20,9 +20,6 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
     const decoded = decode(token) as JwtPayload;
     const user = (await prisma.client.findFirstOrThrow({
       where: { id },
-      include: {
-        contacts: true,
-      },
     })) as Client;
 
     if (decoded.sub !== user.id) {
