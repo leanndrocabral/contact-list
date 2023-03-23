@@ -14,7 +14,7 @@ const poppins = Poppins({ weight: "500", subsets: ["latin"] });
 
 export default function Home() {
   return (
-    <Box className={poppins.className}>
+    <Box  className={poppins.className}>
       <Img
         src="https://images.pexels.com/photos/12198530/pexels-photo-12198530.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         w="100%"

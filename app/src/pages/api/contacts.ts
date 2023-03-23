@@ -40,16 +40,14 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
         return response.status(200).json(contacts);
     }
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.meta.target[0] === "email") {
-        return response
-          .status(400)
-          .json({ message: "This email already exists in your contacts." });
-      }
+    if (error.meta.target[0] === "email") {
       return response
         .status(400)
-        .json({ message: "This phone already exists in your contacts." });
+        .json({ message: "This email already exists in your contacts." });
     }
+    return response
+      .status(400)
+      .json({ message: "This phone already exists in your contacts." });
   }
 }
 

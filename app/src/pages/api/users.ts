@@ -1,5 +1,5 @@
 import { hash } from "bcryptjs";
-import { prisma } from "../../db/db";;
+import { prisma } from "../../db/db";
 import { Prisma } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../utils/exclude";
@@ -32,16 +32,14 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
         return response.status(200).json(users);
     }
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.meta.target[0] === "email") {
-        return response
-          .status(400)
-          .json({ message: "This email is already in use" });
-      }
+    if (error.meta.target[0] === "email") {
       return response
         .status(400)
-        .json({ message: "This phone number is already in use" });
+        .json({ message: "This email is already in use" });
     }
+    return response
+      .status(400)
+      .json({ message: "This phone number is already in use" });
   }
 }
 
