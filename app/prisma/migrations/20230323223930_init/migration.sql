@@ -35,4 +35,4 @@ CREATE UNIQUE INDEX "contacts_email_key" ON "contacts"("email");
 CREATE UNIQUE INDEX "contacts_telephone_key" ON "contacts"("telephone");
 
 -- AddForeignKey
-ALTER TABLE "contacts" ADD CONSTRAINT "contacts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "clients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "contacts" ADD CONSTRAINT "contacts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "clients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
