@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { client } from "./schemas/client.schema";
-import { contact } from "./schemas/contacts.schema";
+import { createClientApiSchema } from "./schemas/client";
+import { contact } from "./schemas/contact";
 
 export default async function middleware(request: NextRequest) {
   try {
     const { method, headers } = request;
-    
+
     const token = headers.get("authorization")?.split(" ")[1];
 
     switch (true) {
@@ -39,13 +39,13 @@ export default async function middleware(request: NextRequest) {
 
       case method !== "POST" && method !== "PATCH":
         return NextResponse.next();
-        
+
       case request.nextUrl.pathname.startsWith("/api/users"):
-        client.parse(await request.json());
+        createClientApiSchema.parse(await request.json());
         return NextResponse.next();
 
       case request.nextUrl.pathname.startsWith("/api/users/"):
-        client.partial().parse(await request.json());
+        createClientApiSchema.partial().parse(await request.json());
         return NextResponse.next();
 
       case request.nextUrl.pathname.startsWith("/api/contacts"):

@@ -2,8 +2,9 @@ import { hash } from "bcryptjs";
 import { prisma } from "../../db/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../utils/exclude";
+import { Prisma } from "@prisma/client";
 
-async function handler(request: NextApiRequest, response: NextApiResponse) {
+const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
     const { method, body } = request;
 
@@ -27,19 +28,22 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
             telephone: true,
             registrationDate: true,
           },
+          orderBy: { fullName: "asc" },
         });
         return response.status(200).json(users);
     }
   } catch (error) {
-    if (error?.meta.target[0] === "email") {
+    if ((error instanceof Prisma.PrismaClientKnownRequestError) as unknown) {
+      if (error.meta.target.includes("email")) {
+        return response
+          .status(400)
+          .json({ message: "This email is already in use" });
+      }
       return response
         .status(400)
-        .json({ message: "This email is already in use" });
+        .json({ message: "This phone number is already in use" });
     }
-    return response
-      .status(400)
-      .json({ message: "This phone number is already in use" });
   }
-}
+};
 
 export default handler;

@@ -4,7 +4,7 @@ import { Contact, Prisma } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../../utils/exclude";
 
-async function handler(request: NextApiRequest, response: NextApiResponse) {
+export async function handler(request: NextApiRequest, response: NextApiResponse) {
   try {
     const { method, body, query, headers } = request;
 
@@ -54,5 +54,3 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
     }
   }
 }
-
-export default handler;

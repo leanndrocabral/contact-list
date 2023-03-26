@@ -2,8 +2,12 @@ import jwt, { decode, JwtPayload } from "jsonwebtoken";
 import { prisma } from "../../db/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../utils/exclude";
+import { Prisma } from "@prisma/client";
 
-async function handler(request: NextApiRequest, response: NextApiResponse) {
+export async function handler(
+  request: NextApiRequest,
+  response: NextApiResponse
+) {
   try {
     const { method, body, headers } = request;
 
@@ -35,19 +39,20 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
             telephone: true,
             registrationDate: true,
           },
+          orderBy: { id: "asc" },
         });
         return response.status(200).json(contacts);
     }
   } catch (error) {
-    if (error.meta?.target[0] === "email") {
+    if ((error instanceof Prisma.PrismaClientKnownRequestError) as unknown) {
+      if (error.meta.target.includes("email")) {
+        return response
+          .status(400)
+          .json({ message: "This email already exists in your contacts." });
+      }
       return response
         .status(400)
-        .json({ message: "This email already exists in your contacts." });
+        .json({ message: "This phone already exists in your contacts." });
     }
-    return response
-      .status(400)
-      .json({ message: "This phone already exists in your contacts." });
   }
 }
-
-export default handler;
