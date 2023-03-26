@@ -26,9 +26,9 @@ model Client {
 model Contact {
   id               String   @id @default(uuid())
   fullName         String   @map("full_name")
-  email            String   @unique
-  telephone        String   @unique
-  avatar            String
+  email            String
+  telephone        String
+  avatar           String
   registrationDate DateTime @default(now()) @map("registration_date")
 
   userId String @map("user_id")

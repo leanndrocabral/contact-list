@@ -44,10 +44,6 @@ const Dashboard = ({ client, contacts }: any) => {
     resolver: zodResolver(createContactSchema),
   });
 
-  useEffect(() => {
-    setContats(contacts);
-  }, []);
-
   return (
     <Box className={inter.className}>
       <Box w="100%" h="100vh" display="flex" justifyContent="center">
