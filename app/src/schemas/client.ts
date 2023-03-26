@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createClientApiSchema = z.object({
   fullName: z
     .string()
-    .min(10, "Full name must be at least 10 characters long.")
+    .min(1, "Full name must be at least 1 characters long.")
     .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/),
   email: z.string().email(),
   password: z.string().min(8, "The password must have at least 8 characters."),

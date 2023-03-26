@@ -11,27 +11,28 @@ datasource db {
 }
 
 model Client {
-  id               String @id @default(uuid())
-  fullName         String @map("full_name")
-  email            String @unique
-  password         String 
-  telephone        String @unique
+  id               String   @id @default(uuid())
+  fullName         String   @map("full_name")
+  email            String   @unique
+  password         String
+  telephone        String   @unique
   registrationDate DateTime @default(now()) @map("registration_date")
 
-  @@map("clients")
-
   contacts Contact[]
+
+  @@map("clients")
 }
 
 model Contact {
-  id               String @id @default(uuid())
-  fullName         String @map("full_name")
-  email            String @unique
-  telephone        String @unique
+  id               String   @id @default(uuid())
+  fullName         String   @map("full_name")
+  email            String   @unique
+  telephone        String   @unique
+  avatar            String
   registrationDate DateTime @default(now()) @map("registration_date")
-
-  @@map("contacts")
 
   userId String @map("user_id")
   user   Client @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("contacts")
 }

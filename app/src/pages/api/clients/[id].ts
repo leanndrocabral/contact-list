@@ -4,10 +4,7 @@ import exclude from "../../../utils/exclude";
 import { Client, Prisma } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
-) {
+const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
     const { method, body, query, headers } = request;
 
@@ -57,4 +54,6 @@ export async function handler(
         return response.status(500).json({ message: "Internal server error." });
     }
   }
-}
+};
+
+export default handler

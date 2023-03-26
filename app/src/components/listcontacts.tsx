@@ -13,12 +13,19 @@ import {
   FormControl,
   Input,
   Button,
+  ModalCloseButton,
 } from "@chakra-ui/react";
+import { useContext } from "react";
+
 import InputMask from "react-input-mask";
 import editContact from "../public/imgs/edit-contact.jpg";
+import { AuthContext } from "../contexts/authcontext";
+import ModalImages from "./modalavatars";
 
-export default function ListContacts() {
+const ListContact = () => {
+  const { contacts } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box
       w="90%"
@@ -36,100 +43,42 @@ export default function ListContacts() {
       }}
     >
       <UnorderedList margin="0px">
-        <ListItem
-          onClick={onOpen}
-          display="flex"
-          cursor="pointer"
-          background="#ffffff"
-          h="90px"
-          alignItems="center"
-          borderRadius={["4px", "6px"]}
-        >
-          <Text
-            minW="50px"
-            h="50px"
-            textAlign="center"
-            paddingTop="15px"
-            borderRadius="50%"
-            fontSize="15px"
-            color="#FFFFFF"
-            background="#EB459E"
-            marginLeft="10px"
+        {contacts.map((contact: any, index) => (
+          <ListItem
+            key={index}
+            onClick={onOpen}
+            display="flex"
+            cursor="pointer"
+            background={index % 2 === 0 ? "#FFFFFF" : "#E8E8E8"}
+            padding="10px"
+            alignItems="center"
+            borderRadius={["4px", "6px"]}
           >
-            MG
-          </Text>
-          <Box w="100%" h="50px" marginLeft="20px">
-            <Text fontSize={["15px", "16px"]}>Matheus Gay</Text>
-            <Text fontSize={["12px", "13px"]} color="#858282">
-              +55 (12) 93618-1507
-            </Text>
-          </Box>
-        </ListItem>
+            <Img
+              minW="70px"
+              h="70px"
+              textAlign="center"
+              borderRadius="50%"
+              fontSize="15px"
+              marginLeft="10px"
+              objectFit="cover"
+              src={contact.avatar}
+            />
 
-        <ListItem
-          onClick={onOpen}
-          display="flex"
-          cursor="pointer"
-          background="#e8e9eb"
-          h="90px"
-          alignItems="center"
-          borderRadius={["4px", "6px"]}
-        >
-          <Text
-            minW="50px"
-            h="50px"
-            textAlign="center"
-            paddingTop="15px"
-            borderRadius="50%"
-            fontSize="15px"
-            color="#FFFFFF"
-            background="#ED4245"
-            marginLeft="10px"
-          >
-            MG
-          </Text>
-          <Box w="100%" h="50px" marginLeft="20px">
-            <Text fontSize={["15px", "16px"]}>Matheus Gay</Text>
-            <Text fontSize={["12px", "13px"]} color="#858282">
-              +55 (12) 93618-1507
-            </Text>
-          </Box>
-        </ListItem>
-
-        <ListItem
-          onClick={onOpen}
-          display="flex"
-          cursor="pointer"
-          background="#ffffff"
-          h="90px"
-          alignItems="center"
-          borderRadius={["4px", "6px"]}
-        >
-          <Text
-            minW="50px"
-            h="50px"
-            textAlign="center"
-            paddingTop="15px"
-            borderRadius="50%"
-            fontSize="15px"
-            color="#FFFFFF"
-            background="#57F287"
-            marginLeft="10px"
-          >
-            MG
-          </Text>
-          <Box w="100%" h="50px" marginLeft="20px">
-            <Text fontSize={["15px", "16px"]}>Matheus Gay</Text>
-            <Text fontSize={["12px", "13px"]} color="#858282">
-              +55 (12) 93618-1507
-            </Text>
-          </Box>
-        </ListItem>
+            <Box w="100%" h="50px" marginLeft="20px">
+              <Text fontSize={["15px", "16px"]}>{contact.fullName}</Text>
+              <Text fontSize={["12px", "13px"]} color="#858282">
+                {contact.telephone}
+              </Text>
+            </Box>
+          </ListItem>
+        ))}
       </UnorderedList>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent borderRadius="8px" w={["95%", "95%", "553px"]}>
+          <ModalCloseButton borderRadius="8px" border="1px solid #000000" />
           <ModalBody
             display="flex"
             flexDir="column"
@@ -146,14 +95,7 @@ export default function ListContacts() {
               Editar Contato
             </Heading>
 
-            <Img
-              w="130px"
-              h="130px"
-              objectFit="cover"
-              borderRadius="50%"
-              marginBottom={["20px", "25px"]}
-              src={editContact.src}
-            />
+            <ModalImages />
 
             <Text
               color="#66666698"
@@ -175,19 +117,19 @@ export default function ListContacts() {
                   placeholder="Nome"
                   borderRadius={["4px", "6px"]}
                   h={["52px", "48px"]}
-                ></Input>
+                />
 
                 <Input
                   placeholder="Sobrenome"
                   borderRadius={["4px", "6px"]}
                   h={["52px", "48px"]}
-                ></Input>
+                />
               </Box>
               <Input
                 placeholder="E-mail"
                 borderRadius={["4px", "6px"]}
                 h={["52px", "48px"]}
-              ></Input>
+              />
 
               <Input
                 mask="+55 (**) *****-****"
@@ -195,8 +137,7 @@ export default function ListContacts() {
                 placeholder="Telefone"
                 borderRadius={["4px", "6px"]}
                 h={["52px", "48px"]}
-              ></Input>
-
+              />
               <Box
                 paddingTop="38px"
                 display="flex"
@@ -220,4 +161,6 @@ export default function ListContacts() {
       </Modal>
     </Box>
   );
-}
+};
+
+export default ListContact;

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClientApiSchema } from "./schemas/client";
-import { contact } from "./schemas/contact";
+import { createContactApiSchema } from "./schemas/contact";
 
 export default async function middleware(request: NextRequest) {
   try {
@@ -49,10 +49,10 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.next();
 
       case request.nextUrl.pathname.startsWith("/api/contacts"):
-        contact.parse(await request.json());
+        createContactApiSchema.parse(await request.json());
 
       case request.nextUrl.pathname.startsWith("/api/contacts/"):
-        contact.partial().parse(await request.json());
+        createContactApiSchema.partial().parse(await request.json());
     }
   } catch (error) {
     return NextResponse.json({ message: error }, { status: 400 });

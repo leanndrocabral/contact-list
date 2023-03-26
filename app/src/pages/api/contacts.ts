@@ -4,10 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../utils/exclude";
 import { Prisma } from "@prisma/client";
 
-export async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
-) {
+const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
     const { method, body, headers } = request;
 
@@ -37,9 +34,10 @@ export async function handler(
             fullName: true,
             email: true,
             telephone: true,
+            avatar: true,
             registrationDate: true,
           },
-          orderBy: { id: "asc" },
+          orderBy: { fullName: "asc" },
         });
         return response.status(200).json(contacts);
     }
@@ -55,4 +53,6 @@ export async function handler(
         .json({ message: "This phone already exists in your contacts." });
     }
   }
-}
+};
+
+export default handler;

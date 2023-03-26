@@ -2,32 +2,51 @@ import {
   Box,
   Button,
   FormControl,
+  FormErrorMessage,
   Heading,
   Input,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalOverlay,
   Text,
   useDisclosure,
-  Img,
 } from "@chakra-ui/react";
-import { Inter } from "next/font/google";
-import { useRouter } from "next/router";
+
 import InputMask from "react-input-mask";
-import createContact from "../public/imgs/create-contact.jpg";
-import List from "../components/listcontacts";
+import { Inter } from "next/font/google";
+import { GetServerSideProps } from "next/types";
+import { parseCookies } from "nookies";
+import { decode } from "jsonwebtoken";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../contexts/authcontext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import { apiRequest } from "../services/api";
+import ModalAvatars from "../components/modalavatars";
+import ListContact from "../components/listcontacts";
+import { createContactSchema } from "../schemas/contact";
+import { CreateContactInput } from "../interfaces/interfaces";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Dashboard() {
+const Dashboard = ({ client, contacts }: any) => {
+  const { logoutClient, createContact, setContats } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { push } = useRouter();
 
-  function createClient() {
-    localStorage.removeItem("clientToken");
-    push("/signin");
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateContactInput>({
+    resolver: zodResolver(createContactSchema),
+  });
+
+  useEffect(() => {
+    setContats(contacts);
+  }, []);
 
   return (
     <Box className={inter.className}>
@@ -57,7 +76,7 @@ export default function Dashboard() {
                 background="#FFFFFFF"
                 border="1px solid #000000"
                 borderRadius={["6px", "8px"]}
-                onClick={createClient}
+                onClick={logoutClient}
               >
                 Sair
               </Button>
@@ -69,11 +88,11 @@ export default function Dashboard() {
                   fontSize={["21px", "23px"]}
                   paddingBottom="5px"
                 >
-                  Leandro Lourenço
+                  {client.fullName}
                 </Heading>
                 <Box>
                   <Text fontSize="13px" color="#666666">
-                    +55 (12) 93618-1507
+                    {client.telephone}
                   </Text>
                 </Box>
               </Box>
@@ -84,7 +103,7 @@ export default function Dashboard() {
               marginTop="20px"
               borderRadius={["4px", "6px"]}
               h={["52px", "48px"]}
-            ></Input>
+            />
           </Box>
           <Box
             w="90%"
@@ -92,11 +111,11 @@ export default function Dashboard() {
             marginTop="20px"
           ></Box>
 
-          <List />
+          <ListContact />
 
           <Button
             w="90%"
-            h="46px"
+            minH="46px"
             fontWeight="400"
             onClick={onOpen}
             borderRadius={["8px", "10px"]}
@@ -111,6 +130,7 @@ export default function Dashboard() {
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent borderRadius="8px" w={["95%", "95%", "553px"]}>
+              <ModalCloseButton borderRadius="8px" border="1px solid #000000" />
               <ModalBody
                 display="flex"
                 flexDir="column"
@@ -127,14 +147,7 @@ export default function Dashboard() {
                   Criar contato
                 </Heading>
 
-                <Img
-                  w="130px"
-                  h="130px"
-                  objectFit="cover"
-                  borderRadius="50%"
-                  marginBottom={["20px", "25px"]}
-                  src={createContact.src}
-                />
+                <ModalAvatars />
 
                 <Text
                   color="#66666698"
@@ -145,38 +158,69 @@ export default function Dashboard() {
                 </Text>
 
                 <FormControl
+                  as="form"
                   display="flex"
                   flexDir="column"
                   gap="20px"
                   padding="30px"
                   alignSelf="center"
+                  isInvalid={
+                    !!errors.firstName ||
+                    !!errors.lastName ||
+                    !!errors.email ||
+                    !!errors.telephone
+                  }
                 >
                   <Box display="flex" gap="10px">
-                    <Input
-                      placeholder="Nome"
-                      borderRadius={["4px", "6px"]}
-                      h={["52px", "48px"]}
-                    ></Input>
+                    <Box>
+                      <Input
+                        placeholder="Nome"
+                        borderRadius={["4px", "6px"]}
+                        h={["52px", "48px"]}
+                        {...register("firstName")}
+                      />
+                      <FormErrorMessage>
+                        {errors.firstName && errors.firstName?.message}
+                      </FormErrorMessage>
+                    </Box>
 
-                    <Input
-                      placeholder="Sobrenome"
-                      borderRadius={["4px", "6px"]}
-                      h={["52px", "48px"]}
-                    ></Input>
+                    <Box>
+                      <Input
+                        placeholder="Sobrenome"
+                        borderRadius={["4px", "6px"]}
+                        h={["52px", "48px"]}
+                        {...register("lastName")}
+                      />
+                      <FormErrorMessage>
+                        {errors.lastName && errors.lastName?.message}
+                      </FormErrorMessage>
+                    </Box>
                   </Box>
-                  <Input
-                    placeholder="E-mail"
-                    borderRadius={["4px", "6px"]}
-                    h={["52px", "48px"]}
-                  ></Input>
+                  <Box>
+                    <Input
+                      placeholder="E-mail"
+                      borderRadius={["4px", "6px"]}
+                      h={["52px", "48px"]}
+                      {...register("email")}
+                    />
+                    <FormErrorMessage>
+                      {errors.email && errors.email?.message}
+                    </FormErrorMessage>
+                  </Box>
 
-                  <Input
-                    mask="+55 (**) *****-****"
-                    as={InputMask}
-                    placeholder="Telefone"
-                    borderRadius={["4px", "6px"]}
-                    h={["52px", "48px"]}
-                  ></Input>
+                  <Box>
+                    <Input
+                      mask="+55 (**) *****-****"
+                      as={InputMask}
+                      placeholder="Telefone"
+                      borderRadius={["4px", "6px"]}
+                      h={["52px", "48px"]}
+                      {...register("telephone")}
+                    />
+                    <FormErrorMessage>
+                      {errors.telephone && errors.telephone?.message}
+                    </FormErrorMessage>
+                  </Box>
 
                   <Box
                     paddingTop="38px"
@@ -191,6 +235,7 @@ export default function Dashboard() {
                       h="42px"
                       color="#FFFFFF"
                       backgroundColor="#5865F2"
+                      onClick={handleSubmit(createContact)}
                     >
                       Criar
                     </Button>
@@ -203,4 +248,23 @@ export default function Dashboard() {
       </Box>
     </Box>
   );
-}
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parseCookies(context);
+  const token = cookies._clientToken;
+
+  const decoded = decode(token);
+  apiRequest.defaults.headers.authorization = `Bearer ${token}`;
+  const client = await apiRequest.get(`/clients/${decoded?.sub}`);
+  const contacts = await apiRequest.get("/contacts");
+
+  return {
+    props: {
+      client: client.data,
+      contacts: contacts.data,
+    },
+  };
+};
+
+export default Dashboard;
