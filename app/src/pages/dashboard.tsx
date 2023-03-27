@@ -33,12 +33,12 @@ import { CreateContactInput } from "../interfaces/interfaces";
 const inter = Inter({ subsets: ["latin"] });
 
 const Dashboard = ({ client, contacts }: any) => {
-  const { logoutClient, createContact, setContats } = useContext(AuthContext);
+  const { logoutClient, createContact, setContacts } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    setContats(contacts);
-  }, []);
+    setContacts(contacts);
+  });
 
   const {
     register,

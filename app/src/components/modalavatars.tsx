@@ -10,20 +10,16 @@ import {
   Img,
   ListItem,
   UnorderedList,
-  ModalCloseButton,
 } from "@chakra-ui/react";
-import { LegacyRef, MutableRefObject, useContext } from "react";
-
+import { useContext } from "react";
 import { AuthContext } from "../contexts/authcontext";
-import createContact from "../public/imgs/create-contact.jpg";
 
 const ModalImages = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { setAvatar, avatar } = useContext(AuthContext);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   return (
-    <Box>
+    <Box cursor="pointer">
       <Img
         w="130px"
         h="130px"

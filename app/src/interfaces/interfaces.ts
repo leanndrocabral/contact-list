@@ -1,3 +1,4 @@
+import { Client } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 
 export interface LoginInput {
@@ -19,13 +20,16 @@ export interface ContextProps {
 
 export interface Context {
   avatar: string;
-  setAvatar: Dispatch<SetStateAction<string>>;
   contacts: Contacts[];
-  setContats: Dispatch<SetStateAction<Contacts[]>>;
-  logoutClient: () => void;
-  clientLogin: (payload: LoginInput) => Promise<void>;
+  contact: Client | null;
+  setAvatar: Dispatch<SetStateAction<string>>;
   createClient: (payload: CreateClientInput) => Promise<void>;
+  clientLogin: (payload: LoginInput) => Promise<void>;
+  logoutClient: () => void;
   createContact: (payload: CreateContactInput) => Promise<void>;
+  getContact: (id: string, callback: Function) => Promise<void>;
+  setContacts: Dispatch<SetStateAction<Contacts[]>>;
+  updateContact: (payload: UpdateContactInput) => Promise<void>;
 }
 
 export interface CreateContactInput {
@@ -36,7 +40,16 @@ export interface CreateContactInput {
   avatar: string;
 }
 
+export interface UpdateContactInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  telephone: string;
+  avatar?: string;
+}
+
 export interface Contacts {
+  id: string;
   avatar: string;
   fullName: string;
   firstName?: string;

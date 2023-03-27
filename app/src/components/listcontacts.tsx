@@ -14,16 +14,37 @@ import {
   Input,
   Button,
   ModalCloseButton,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useContext } from "react";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import InputMask from "react-input-mask";
 import { AuthContext } from "../contexts/authcontext";
+
 import ModalImages from "./modalavatars";
+import { Contacts, UpdateContactInput } from "../interfaces/interfaces";
+import { updateContactSchema } from "../schemas/contact";
 
 const ListContact = () => {
-  const { contacts } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { contacts, getContact, contact, updateContact } = useContext(AuthContext);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UpdateContactInput>({
+    resolver: zodResolver(updateContactSchema),
+    values: {
+      firstName: contact?.fullName.split(" ")[0] as string,
+      lastName: contact?.fullName.split(" ")[1] as string,
+      email: contact?.email as string,
+      telephone: contact?.telephone as string,
+    },
+  });
 
   return (
     <Box
@@ -32,26 +53,26 @@ const ListContact = () => {
       paddingRight="5px"
       overflowY="auto"
       css={{
-        "&::-webkit-scrollbar": {
-          width: ["4px"],
-        },
+        "&::-webkit-scrollbar": { width: "4px" },
         "&::-webkit-scrollbar-thumb": {
-          background: "#66666659",
+          background: "#C2C2C2",
           borderRadius: "24px",
         },
       }}
     >
       <UnorderedList margin="0px">
-        {contacts.map((contact: any, index) => (
+        {contacts.map((contact: Contacts, index: number) => (
           <ListItem
-            key={index}
-            onClick={onOpen}
+            key={contact.id}
             display="flex"
             cursor="pointer"
             background={index % 2 === 0 ? "#FFFFFF" : "#E8E8E8"}
             padding="10px"
             alignItems="center"
             borderRadius={["4px", "6px"]}
+            onClick={() => {
+              getContact(contact.id, onOpen);
+            }}
           >
             <Img
               minW="70px"
@@ -105,38 +126,71 @@ const ListContact = () => {
             </Text>
 
             <FormControl
+              as="form"
               display="flex"
               flexDir="column"
               gap="20px"
               padding="30px"
               alignSelf="center"
+              isInvalid={
+                !!errors.firstName ||
+                !!errors.lastName ||
+                !!errors.email ||
+                !!errors.telephone
+              }
             >
               <Box display="flex" gap="10px">
-                <Input
-                  placeholder="Nome"
-                  borderRadius={["4px", "6px"]}
-                  h={["52px", "48px"]}
-                />
+                <Box>
+                  <Input
+                    placeholder="Nome"
+                    borderRadius={["4px", "6px"]}
+                    h={["52px", "48px"]}
+                    {...register("firstName")}
+                  />
+                  <FormErrorMessage>
+                    {errors.firstName && errors.firstName?.message}
+                  </FormErrorMessage>
+                </Box>
 
-                <Input
-                  placeholder="Sobrenome"
-                  borderRadius={["4px", "6px"]}
-                  h={["52px", "48px"]}
-                />
+                <Box>
+                  <Input
+                    defaultValue={contact?.fullName.split(" ")[1]}
+                    placeholder="Sobrenome"
+                    borderRadius={["4px", "6px"]}
+                    h={["52px", "48px"]}
+                    {...register("lastName")}
+                  />
+                  <FormErrorMessage>
+                    {errors.lastName && errors.lastName?.message}
+                  </FormErrorMessage>
+                </Box>
               </Box>
-              <Input
-                placeholder="E-mail"
-                borderRadius={["4px", "6px"]}
-                h={["52px", "48px"]}
-              />
+              <Box>
+                <Input
+                  placeholder="E-mail"
+                  borderRadius={["4px", "6px"]}
+                  h={["52px", "48px"]}
+                  {...register("email")}
+                />
+                <FormErrorMessage>
+                  {errors.email && errors.email?.message}
+                </FormErrorMessage>
+              </Box>
 
-              <Input
-                mask="+55 (**) *****-****"
-                as={InputMask}
-                placeholder="Telefone"
-                borderRadius={["4px", "6px"]}
-                h={["52px", "48px"]}
-              />
+              <Box>
+                <Input
+                  mask="+55 (**) *****-****"
+                  as={InputMask}
+                  placeholder="Telefone"
+                  borderRadius={["4px", "6px"]}
+                  h={["52px", "48px"]}
+                  {...register("telephone")}
+                />
+                <FormErrorMessage>
+                  {errors.telephone && errors.telephone?.message}
+                </FormErrorMessage>
+              </Box>
+
               <Box
                 paddingTop="38px"
                 display="flex"
@@ -150,8 +204,9 @@ const ListContact = () => {
                   h="42px"
                   color="#FFFFFF"
                   backgroundColor="#5865F2"
+                  onClick={handleSubmit(updateContact)}
                 >
-                  Criar
+                  Editar
                 </Button>
               </Box>
             </FormControl>

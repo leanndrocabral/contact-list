@@ -35,3 +35,5 @@ export const createContactSchema = z.object({
       "Número de telefone inválido"
     ),
 });
+
+export const updateContactSchema = createContactSchema;
