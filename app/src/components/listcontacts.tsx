@@ -18,7 +18,6 @@ import {
 import { useContext } from "react";
 
 import InputMask from "react-input-mask";
-import editContact from "../public/imgs/edit-contact.jpg";
 import { AuthContext } from "../contexts/authcontext";
 import ModalImages from "./modalavatars";
 

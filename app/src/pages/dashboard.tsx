@@ -36,6 +36,10 @@ const Dashboard = ({ client, contacts }: any) => {
   const { logoutClient, createContact, setContats } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  useEffect(() => {
+    setContats(contacts);
+  }, []);
+
   const {
     register,
     handleSubmit,

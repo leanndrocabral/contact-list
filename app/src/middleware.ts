@@ -7,6 +7,26 @@ export default async function middleware(request: NextRequest) {
   try {
     const { method, headers } = request;
 
+    const url = request.url;
+    const authToken = request.cookies.get("_clientToken");
+
+    if (url.includes("/dashboard")) {
+      if (!authToken) {
+        return NextResponse.redirect(new URL("/signin", request.url));
+      }
+    }
+
+    switch (true) {
+      case url.includes("/signin"):
+        if (authToken) {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+      case url.includes("/signup"):
+        if (authToken) {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+    }
+
     const token = headers.get("authorization")?.split(" ")[1];
 
     switch (true) {

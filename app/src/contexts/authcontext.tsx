@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }: ContextProps) => {
       const { data } = await apiRequest.post("/login", payload);
 
       setCookie(null, "_clientToken", data.token, {
-        maxAge: 86400 * 7,
         path: "/",
       });
 
@@ -50,19 +49,17 @@ export const AuthProvider = ({ children }: ContextProps) => {
 
       push("/signin");
     } catch (error) {
-      if (error.response) {
-        const { message } = error.response.data;
+      const { message } = error.response.data;
 
-        if (message.includes("email")) {
-          notifyError("Este e-mail já está em uso.");
-        }
-        notifyError("Este telefone já está em uso.");
+      if (message.includes("email")) {
+        notifyError("Este e-mail já está em uso.");
       }
+      notifyError("Este telefone já está em uso.");
     }
   };
 
   const logoutClient = () => {
-    destroyCookie(null, "@client:token");
+    destroyCookie(null, "_clientToken");
     push("/signin");
   };
 
