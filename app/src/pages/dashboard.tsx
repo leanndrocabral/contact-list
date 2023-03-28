@@ -21,7 +21,6 @@ import ContactsList from "../components/contactslist";
 import { decode } from "jsonwebtoken";
 import { useRouter } from "next/router";
 import { Inter } from "next/font/google";
-import { Contact } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
 import { GetServerSideProps } from "next/types";
@@ -29,26 +28,35 @@ import { AuthContext } from "../contexts/authcontext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { destroyCookie, parseCookies } from "nookies";
 import { useContext, useEffect, useState } from "react";
-import { createContactSchema } from "../schemas/contact";
+import { createContactSchema } from "../schemas/frontend/contact";
 import { notifySuccess, notifyError } from "../utils/toast";
-import { CreateContactInput } from "../interfaces/interfaces";
+import { CreateContactInput } from "../interfaces/frontend/interfaces";
+import { Contact, DashboardProps } from "../interfaces/frontend/interfaces";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const Dashboard = ({ client, contacts }: any) => {
+const Dashboard = ({ client, contacts }: DashboardProps) => {
   const { push } = useRouter();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { avatar, contactsList, setContactsList } = useContext(AuthContext);
-  const [filteredContacts, setFilteredContacts] = useState([]);
+  const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
 
   useEffect(() => {
     setContactsList(contacts);
   }, [setContactsList, contacts]);
 
   const createContact = async (payload: CreateContactInput) => {
+    
     try {
+      reset({
+        firstName: "",
+        lastName: "",
+        email: "",
+        telephone: "",
+      });
+
       const cookies = parseCookies();
       const token = cookies._clientToken;
 
@@ -76,6 +84,7 @@ const Dashboard = ({ client, contacts }: any) => {
         return 0;
       });
       setContactsList(orderedList);
+      onClose();
     } catch {
       notifyError("Algo deu errado ao criar o contato.");
     }
@@ -87,11 +96,11 @@ const Dashboard = ({ client, contacts }: any) => {
   };
 
   const filterContacts = ({ value }: HTMLInputElement) => {
-    const inputValue = value.toLocaleLowerCase().trim();
+    const inputValue: string = value.toLowerCase().trim();
 
     setFilteredContacts(
       contactsList.filter((contact: Contact) =>
-        contact.fullName.toLocaleLowerCase().trim().startsWith(inputValue)
+        contact.fullName.toLowerCase().trim().startsWith(inputValue)
       )
     );
   };
@@ -99,6 +108,7 @@ const Dashboard = ({ client, contacts }: any) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<CreateContactInput>({
     resolver: zodResolver(createContactSchema),
@@ -170,7 +180,7 @@ const Dashboard = ({ client, contacts }: any) => {
 
           <ContactsList
             values={
-              filteredContacts.length > 0 ? filteredContacts : contactsList
+              filteredContacts.length > 0 ? filteredContacts : contactsList 
             }
           />
 

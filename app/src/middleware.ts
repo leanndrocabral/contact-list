@@ -1,80 +1,114 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createClientApiSchema } from "./schemas/client";
-import { createContactApiSchema } from "./schemas/contact";
+import {
+  createClientApiSchema,
+  updateClientApiSchema,
+} from "./schemas/backend/client";
+import {
+  createContactApiSchema,
+  updateContactApiSchema,
+} from "./schemas/backend/contact";
+import { ZodError } from "./interfaces/backend/interfaces";
 
 export default async function middleware(request: NextRequest) {
   try {
-    const { method, headers } = request;
+    const url = request.nextUrl.pathname;
+    const urls: string[] = ["/signin", "/signup"];
 
-    const url = request.url;
-    const authToken = request.cookies.get("_clientToken");
+    const token = request.cookies.get("_clientToken");
 
-    if (url.includes("/dashboard")) {
-      if (!authToken) {
-        return NextResponse.redirect(new URL("/signin", request.url));
+    if (urls.includes(url) && token) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+      
+    } else if (url.includes("/dashboard") && !token) {
+      return NextResponse.redirect(new URL("/signin", request.url));
+    }
+  } catch {
+    return NextResponse.json(
+      { message: "Internal server error." },
+      { status: 500 }
+    );
+  }
+
+  try {
+    const url = request.nextUrl.pathname;
+    
+    if (url.includes("/api/clients") && request.method.includes("POST")) {
+      const paylaod = await request.json();
+      const validate: ZodError = createClientApiSchema.safeParse(paylaod);
+
+      if (!validate.success) {
+        return NextResponse.json({ message: validate }, { status: 400 });
+      }
+    } else if (
+      url.includes("/api/clients/") &&
+      request.method.includes("PATCH")
+    ) {
+      const paylaod = await request.json();
+      const validate: ZodError = updateClientApiSchema.safeParse(paylaod);
+
+      if (!validate.success) {
+        return NextResponse.json({ message: validate }, { status: 400 });
       }
     }
 
-    switch (true) {
-      case url.includes("/signin"):
-        if (authToken) {
-          return NextResponse.redirect(new URL("/dashboard", request.url));
-        }
-      case url.includes("/signup"):
-        if (authToken) {
-          return NextResponse.redirect(new URL("/dashboard", request.url));
-        }
+    if (url.includes("/api/contacts") && request.method.includes("POST")) {
+      const paylaod = await request.json();
+      const validate: ZodError = createContactApiSchema.safeParse(paylaod);
+
+      if (!validate.success) {
+        return NextResponse.json({ message: validate }, { status: 400 });
+      }
+    } else if (
+      url.includes("/api/contacts/") &&
+      request.method.includes("PATCH")
+    ) {
+      const paylaod = await request.json();
+      const validate: ZodError = updateContactApiSchema.safeParse(paylaod);
+
+      if (!validate.success) {
+        return NextResponse.json({ message: validate }, { status: 400 });
+      }
     }
+  } catch (error){
+    console.log(error);
+    
+    return NextResponse.json(
+      { message: "Internal server error." },
+      { status: 500 }
+    );
+  }
 
-    const token = headers.get("authorization")?.split(" ")[1];
+  try {
+    const id = request.nextUrl.pathname.split("/").at(-1);
 
-    switch (true) {
-      case request.nextUrl.pathname.startsWith("/api/users/"):
-        if (token) {
-          return NextResponse.next();
-        }
-        return NextResponse.json(
-          { message: "A token is required." },
-          { status: 401 }
-        );
+    const url = request.nextUrl.pathname;
+    const urls: string[] = [
+      "/api/clients",
+      "/api/contacts",
+      `/api/clients/${id}`,
+      `/api/contacts/${id}`,
+    ];
 
-      case request.nextUrl.pathname.startsWith("/api/contacts"):
-        if (token) {
-          return NextResponse.next();
-        }
-        return NextResponse.json(
-          { message: "A token is required." },
-          { status: 401 }
-        );
+    const token = request.headers.get("authorization") as string;
+    const authToken = token?.split(" ")[1];
 
-      case request.nextUrl.pathname.startsWith("/api/contacts/"):
-        if (token) {
-          return NextResponse.next();
-        }
-        return NextResponse.json(
-          { message: "A token is required." },
-          { status: 401 }
-        );
+    if (urls[0].includes(url) && request.method.includes("POST")) {
+      return NextResponse.next();
 
-      case method !== "POST" && method !== "PATCH":
-        return NextResponse.next();
+    } else if (urls.includes(url) && authToken) {
+      return NextResponse.next();
 
-      case request.nextUrl.pathname.startsWith("/api/users"):
-        createClientApiSchema.parse(await request.json());
-        return NextResponse.next();
-
-      case request.nextUrl.pathname.startsWith("/api/users/"):
-        createClientApiSchema.partial().parse(await request.json());
-        return NextResponse.next();
-
-      case request.nextUrl.pathname.startsWith("/api/contacts"):
-        createContactApiSchema.parse(await request.json());
-
-      case request.nextUrl.pathname.startsWith("/api/contacts/"):
-        createContactApiSchema.partial().parse(await request.json());
+    } else if (urls.includes(url) && !authToken) {
+      return NextResponse.json(
+        { message: "A token is required." },
+        { status: 401 }
+      );
     }
-  } catch (error) {
-    return NextResponse.json({ message: error }, { status: 400 });
+  } catch {
+    return NextResponse.json(
+      { message: "Internal server error." },
+      { status: 500 }
+    );
   }
 }

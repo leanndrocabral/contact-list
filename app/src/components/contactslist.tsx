@@ -32,11 +32,15 @@ import { useContext, useState } from "react";
 import { apiRequest } from "../services/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthContext } from "../contexts/authcontext";
-import { updateContactSchema } from "../schemas/contact";
+import { updateContactSchema } from "../schemas/frontend/contact";
 import { notifySuccess, notifyError } from "../utils/toast";
-import { Contacts, UpdateContactInput } from "../interfaces/interfaces";
+import {
+  ContactListProps,
+  Contact,
+  UpdateContactInput,
+} from "../interfaces/frontend/interfaces";
 
-const ContactsList = ({ values }: any) => {
+const ContactsList = ({ values }: ContactListProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { setAvatar, avatar, setContactsList, contactsList } =
@@ -82,6 +86,8 @@ const ContactsList = ({ values }: any) => {
       );
       contactsList.splice(index, 1, response.data);
       setContactsList(contactsList);
+
+      onClose();
     } catch {
       notifyError("Algo deu errado ao atualizar o contato.");
     }
@@ -95,7 +101,6 @@ const ContactsList = ({ values }: any) => {
       notifySuccess("Contato excluido.");
 
       const index = contactsList.findIndex((element) => element.id === id);
-
       const contactsListCopy = contactsList.slice();
       contactsListCopy.splice(index, 1);
 
@@ -115,7 +120,7 @@ const ContactsList = ({ values }: any) => {
       firstName: contact?.fullName.split(" ")[0] as string,
       lastName: contact?.fullName.split(" ")[1] as string,
       email: contact?.email as string,
-      telephone: contact?.telephone as string,
+      telephone: contact?.telephone as string
     },
   });
 
@@ -134,7 +139,7 @@ const ContactsList = ({ values }: any) => {
       }}
     >
       <UnorderedList margin="0px">
-        {values.map((contact: Contacts, index: number) => (
+        {values.map((contact: Contact, index: number) => (
           <ListItem
             key={contact.id}
             display="flex"

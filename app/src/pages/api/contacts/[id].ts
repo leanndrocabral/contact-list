@@ -1,5 +1,5 @@
 import jwt, { decode, JwtPayload } from "jsonwebtoken";
-import { prisma } from "../../../db/db";
+import { prisma } from "../../../database/database";
 import { Contact, Prisma } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../../utils/exclude";

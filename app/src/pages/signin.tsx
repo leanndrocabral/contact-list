@@ -16,9 +16,9 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { notifyError } from "../utils/toast";
 import { apiRequest } from "../services/api";
-import { LoginInput } from "../interfaces/interfaces";
+import { LoginInput } from "../interfaces/frontend/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginClientSchema } from "../schemas/client";
+import { loginClientSchema } from "../schemas/frontend/client";
 
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });

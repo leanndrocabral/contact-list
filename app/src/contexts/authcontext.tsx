@@ -1,6 +1,5 @@
-import { Contact } from "@prisma/client";
 import { createContext, useState } from "react";
-import { ContextProps, Context } from "../interfaces/interfaces";
+import { ContextProps, Context, Contact } from "../interfaces/frontend/interfaces";
 
 export const AuthContext = createContext({} as Context);
 
@@ -9,7 +8,7 @@ export const AuthProvider = ({ children }: ContextProps) => {
     t=st=1679855981~exp=1679856581~hmac=6681675914004cb933ae85aab7f8ff08fa0390d73d1c3aed629c7adcd70dc651`;
 
   const [avatar, setAvatar] = useState<string>(defaultAvatar);
-  const [contactsList, setContactsList] = useState<any[]>([]);
+  const [contactsList, setContactsList] = useState<Contact[]>([]);
 
   return (
     <AuthContext.Provider

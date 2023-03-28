@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { compare } from "bcryptjs";
-import { prisma } from "../../db/db";;
+import { prisma } from "../../database/database";;
 import { Client } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 

@@ -1,5 +1,5 @@
 import jwt, { decode, JwtPayload } from "jsonwebtoken";
-import { prisma } from "../../db/db";
+import { prisma } from "../../database/database";
 import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../utils/exclude";
 import { Prisma } from "@prisma/client";
@@ -15,7 +15,6 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
         return response.status(401).json({ message: error.message });
       }
     });
-
     const decoded = decode(token) as JwtPayload;
 
     switch (method) {

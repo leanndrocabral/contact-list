@@ -1,5 +1,5 @@
 import { hash } from "bcryptjs";
-import { prisma } from "../../db/db";
+import { prisma } from "../../database/database";
 import type { NextApiRequest, NextApiResponse } from "next";
 import exclude from "../../utils/exclude";
 import { Prisma } from "@prisma/client";

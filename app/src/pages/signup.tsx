@@ -19,8 +19,8 @@ import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
 import { notifyError } from "../utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClientSchema } from "../schemas/client";
-import { CreateClientInput } from "../interfaces/interfaces";
+import { createClientSchema } from "../schemas/frontend/client";
+import { CreateClientInput } from "../interfaces/frontend/interfaces";
 
 const inter = Inter({ subsets: ["latin"] });
 
