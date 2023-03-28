@@ -9,20 +9,35 @@ import {
   Img,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { useContext } from "react";
-import { Inter } from "next/font/google";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import signin from "../public/imgs/signin.jpg";
-import { loginClientSchema } from "../schemas/client";
-import { LoginInput } from "../interfaces/interfaces";
-import { AuthContext } from "../contexts/authcontext";
 
+import { setCookie } from "nookies";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { notifyError } from "../utils/toast";
+import { apiRequest } from "../services/api";
+import { LoginInput } from "../interfaces/interfaces";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginClientSchema } from "../schemas/client";
+
+import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 const SignIn = () => {
-  const { clientLogin } = useContext(AuthContext);
+  const { push } = useRouter();
+
+  const clientLogin = async (data: LoginInput) => {
+    try {
+      const response = await apiRequest.post("/login", data);
+
+      setCookie(null, "_clientToken", response.data.token, {
+        path: "/",
+      });
+      push("/dashboard");
+    } catch {
+      notifyError("Senha ou e-mail incorreto.");
+    }
+  };
 
   const {
     register,

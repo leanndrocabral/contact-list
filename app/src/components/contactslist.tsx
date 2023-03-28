@@ -15,22 +15,95 @@ import {
   Button,
   ModalCloseButton,
   FormErrorMessage,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from "@chakra-ui/react";
-import { useContext } from "react";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import exclude from "../utils/exclude";
+import ModalImages from "./avatarmodal";
 import InputMask from "react-input-mask";
+
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { parseCookies } from "nookies";
+import { Client } from "@prisma/client";
+import { useForm } from "react-hook-form";
+import { useContext, useState } from "react";
+import { apiRequest } from "../services/api";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthContext } from "../contexts/authcontext";
-
-import ModalImages from "./modalavatars";
-import { Contacts, UpdateContactInput } from "../interfaces/interfaces";
 import { updateContactSchema } from "../schemas/contact";
+import { notifySuccess, notifyError } from "../utils/toast";
+import { Contacts, UpdateContactInput } from "../interfaces/interfaces";
 
-const ListContact = () => {
+const ContactsList = ({ values }: any) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { contacts, getContact, contact, updateContact } = useContext(AuthContext);
+
+  const { setAvatar, avatar, setContactsList, contactsList } =
+    useContext(AuthContext);
+  const [contact, setContact] = useState<Client | null>(null);
+
+  const cookies = parseCookies();
+  const token = cookies._clientToken;
+
+  const getContact = async (id: string) => {
+    apiRequest.defaults.headers.authorization = `Bearer ${token}`;
+    const response = await apiRequest.get(`/contacts/${id}`);
+
+    setContact(response.data);
+    setAvatar(response.data.avatar);
+
+    onOpen();
+  };
+
+  const updateContact = async (payload: UpdateContactInput) => {
+    try {
+      apiRequest.defaults.headers.authorization = `Bearer ${token}`;
+
+      const { firstName, lastName } = payload;
+      const updatedContact = {
+        ...payload,
+        avatar,
+        fullName: `${firstName} ${lastName}`,
+      };
+
+      const formattedContact = exclude(updatedContact, [
+        "firstName",
+        "lastName",
+      ]);
+      const response = await apiRequest.patch(
+        `/contacts/${contact!.id}`,
+        formattedContact
+      );
+      notifySuccess("Contato editado.");
+
+      const index = contactsList.findIndex(
+        (element) => element.id === contact!.id
+      );
+      contactsList.splice(index, 1, response.data);
+      setContactsList(contactsList);
+    } catch {
+      notifyError("Algo deu errado ao atualizar o contato.");
+    }
+  };
+
+  const deleteContact = async (id: string) => {
+    try {
+      apiRequest.defaults.headers.authorization = `Bearer ${token}`;
+
+      await apiRequest.delete(`/contacts/${id}`);
+      notifySuccess("Contato excluido.");
+
+      const index = contactsList.findIndex((element) => element.id === id);
+
+      const contactsListCopy = contactsList.slice();
+      contactsListCopy.splice(index, 1);
+
+      setContactsList(contactsListCopy);
+    } catch {
+      notifyError("Algo deu errado ao excluir o contato.");
+    }
+  };
 
   const {
     register,
@@ -61,7 +134,7 @@ const ListContact = () => {
       }}
     >
       <UnorderedList margin="0px">
-        {contacts.map((contact: Contacts, index: number) => (
+        {values.map((contact: Contacts, index: number) => (
           <ListItem
             key={contact.id}
             display="flex"
@@ -70,9 +143,6 @@ const ListContact = () => {
             padding="10px"
             alignItems="center"
             borderRadius={["4px", "6px"]}
-            onClick={() => {
-              getContact(contact.id, onOpen);
-            }}
           >
             <Img
               minW="70px"
@@ -85,11 +155,53 @@ const ListContact = () => {
               src={contact.avatar}
             />
 
-            <Box w="100%" h="50px" marginLeft="20px">
-              <Text fontSize={["15px", "16px"]}>{contact.fullName}</Text>
-              <Text fontSize={["12px", "13px"]} color="#858282">
-                {contact.telephone}
-              </Text>
+            <Box
+              w="100%"
+              h="50px"
+              marginLeft="20px"
+              display="flex"
+              justifyContent="space-between"
+            >
+              <Box>
+                <Text fontSize={["15px", "16px"]}>{contact.fullName}</Text>
+                <Text fontSize={["12px", "13px"]} color="#858282">
+                  {contact.telephone}
+                </Text>
+              </Box>
+
+              <Menu>
+                {({ isOpen }) => (
+                  <>
+                    <MenuButton
+                      isActive={isOpen}
+                      as={Button}
+                      w={["10px", "12px"]}
+                      background="none"
+                      _hover={{ bg: "none" }}
+                      _active={{ bg: "none" }}
+                    >
+                      <BsThreeDotsVertical />
+                    </MenuButton>
+
+                    <MenuList>
+                      <MenuItem
+                        fontSize={["14px", "16px"]}
+                        onClick={() => {
+                          getContact(contact.id);
+                        }}
+                      >
+                        Editar
+                      </MenuItem>
+                      <MenuItem
+                        fontSize={["14px", "16px"]}
+                        onClick={() => deleteContact(contact.id)}
+                      >
+                        Excluir
+                      </MenuItem>
+                    </MenuList>
+                  </>
+                )}
+              </Menu>
             </Box>
           </ListItem>
         ))}
@@ -217,4 +329,4 @@ const ListContact = () => {
   );
 };
 
-export default ListContact;
+export default ContactsList;

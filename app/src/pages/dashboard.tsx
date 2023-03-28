@@ -13,32 +13,88 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-
+import exclude from "../utils/exclude";
 import InputMask from "react-input-mask";
-import { Inter } from "next/font/google";
-import { GetServerSideProps } from "next/types";
-import { parseCookies } from "nookies";
+import ModalAvatars from "../components/avatarmodal";
+import ContactsList from "../components/contactslist";
+
 import { decode } from "jsonwebtoken";
-import { useContext, useEffect } from "react";
+import { useRouter } from "next/router";
+import { Inter } from "next/font/google";
+import { Contact } from "@prisma/client";
+import { useForm } from "react-hook-form";
+import { apiRequest } from "../services/api";
+import { GetServerSideProps } from "next/types";
 import { AuthContext } from "../contexts/authcontext";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
-import { apiRequest } from "../services/api";
-import ModalAvatars from "../components/modalavatars";
-import ListContact from "../components/listcontacts";
+import { destroyCookie, parseCookies } from "nookies";
+import { useContext, useEffect, useState } from "react";
 import { createContactSchema } from "../schemas/contact";
+import { notifySuccess, notifyError } from "../utils/toast";
 import { CreateContactInput } from "../interfaces/interfaces";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const Dashboard = ({ client, contacts }: any) => {
-  const { logoutClient, createContact, setContacts } = useContext(AuthContext);
+  const { push } = useRouter();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const { avatar, contactsList, setContactsList } = useContext(AuthContext);
+  const [filteredContacts, setFilteredContacts] = useState([]);
+
   useEffect(() => {
-    setContacts(contacts);
-  });
+    setContactsList(contacts);
+  }, [setContactsList, contacts]);
+
+  const createContact = async (payload: CreateContactInput) => {
+    try {
+      const cookies = parseCookies();
+      const token = cookies._clientToken;
+
+      apiRequest.defaults.headers.authorization = `Bearer ${token}`;
+
+      const { firstName, lastName } = payload;
+      const contact = {
+        ...payload,
+        avatar,
+        fullName: `${firstName} ${lastName}`,
+      };
+
+      const formattedContact = exclude(contact, ["firstName", "lastName"]);
+      const response = await apiRequest.post("/contacts", formattedContact);
+      notifySuccess("Contato criado.");
+
+      const listContacts = [...contactsList, response.data];
+      const orderedList = listContacts.sort((a, b) => {
+        if (a.fullName < b.fullName) {
+          return -1;
+        }
+        if (a.fullName > b.fullName) {
+          return 1;
+        }
+        return 0;
+      });
+      setContactsList(orderedList);
+    } catch {
+      notifyError("Algo deu errado ao criar o contato.");
+    }
+  };
+
+  const logoutClient = () => {
+    destroyCookie(null, "_clientToken");
+    push("/signin");
+  };
+
+  const filterContacts = ({ value }: HTMLInputElement) => {
+    const inputValue = value.toLocaleLowerCase().trim();
+
+    setFilteredContacts(
+      contactsList.filter((contact: Contact) =>
+        contact.fullName.toLocaleLowerCase().trim().startsWith(inputValue)
+      )
+    );
+  };
 
   const {
     register,
@@ -99,6 +155,7 @@ const Dashboard = ({ client, contacts }: any) => {
             </Box>
 
             <Input
+              onChange={(event) => filterContacts(event.target)}
               placeholder="Procurar contatos"
               marginTop="20px"
               borderRadius={["4px", "6px"]}
@@ -111,7 +168,11 @@ const Dashboard = ({ client, contacts }: any) => {
             marginTop="20px"
           ></Box>
 
-          <ListContact />
+          <ContactsList
+            values={
+              filteredContacts.length > 0 ? filteredContacts : contactsList
+            }
+          />
 
           <Button
             w="90%"
@@ -256,6 +317,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const decoded = decode(token);
   apiRequest.defaults.headers.authorization = `Bearer ${token}`;
+
   const client = await apiRequest.get(`/clients/${decoded?.sub}`);
   const contacts = await apiRequest.get("/contacts");
 

@@ -9,21 +9,45 @@ import {
   Img,
   FormErrorMessage,
 } from "@chakra-ui/react";
+import exclude from "../utils/exclude";
 import InputMask from "react-input-mask";
-import { useContext } from "react";
+import imageLogin from "../public/imgs/signup.jpg";
+
+import { useRouter } from "next/router";
 import { Inter } from "next/font/google";
 import { useForm } from "react-hook-form";
+import { apiRequest } from "../services/api";
+import { notifyError } from "../utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import imageLogin from "../public/imgs/signup.jpg";
 import { createClientSchema } from "../schemas/client";
 import { CreateClientInput } from "../interfaces/interfaces";
-import { AuthContext } from "../contexts/authcontext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const SignUp = () => {
-  const { createClient } = useContext(AuthContext);
+  const { push } = useRouter();
+
+  const createClient = async (payload: CreateClientInput) => {
+    try {
+      const { firstName, lastName } = payload;
+      const client = {
+        ...payload,
+        fullName: `${firstName} ${lastName}`,
+      };
+
+      const formattedUser = exclude(client, ["firstName", "lastName"]);
+      await apiRequest.post("/clients", formattedUser);
+
+      push("/signin");
+    } catch (error) {
+      const errors = error.response.data;
+
+      if (errors.message.includes("email")) {
+        notifyError("Este e-mail já está em uso.");
+      }
+      notifyError("Este telefone já está em uso.");
+    }
+  };
 
   const {
     register,
@@ -198,4 +222,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp
+export default SignUp;
