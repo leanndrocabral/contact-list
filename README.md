@@ -6,12 +6,15 @@
 Este é o backend da aplicação Projeto FullStack API para gerenciamento de clientes e contatos.
 </p>
 
+<br/>
 
-<h2 align ='center'>Clientes (Endpoints)</h2>
+<p align = "center">
+A URL base é `https://projeto-fullstack.vercel.app/api`
+</p>
 
 <br/>
 
-A URL base é `https://projeto-fullstack.vercel.app/api`
+<h2 align ='center'>Clientes (Endpoints)</h2>
 
 ## **Rotas Sem Autenticação**
 
