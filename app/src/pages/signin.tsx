@@ -33,7 +33,7 @@ const SignIn = () => {
             path: "/",
           });
         },
-        "validando dados.",
+        "Validando dados.",
         "Entrando.",
         "Senha ou e-mail incorretos."
       );
