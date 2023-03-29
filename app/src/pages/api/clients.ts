@@ -34,12 +34,12 @@ const clients = async (request: NextApiRequest, response: NextApiResponse) => {
       if (error.meta.target.includes("email")) {
         return response
           .status(409)
-          .json({ message: "This email is already in use" });
+          .json({ message: "This email is already in use." });
 
       } else if (error.meta.target.includes("telephone")) {
         return response
           .status(409)
-          .json({ message: "This phone number is already in use" });
+          .json({ message: "This phone number is already in use." });
       }
       return response.status(500).json({ message: "Internal server error." });
     }

@@ -17,7 +17,7 @@ const clientId = async (request: NextApiRequest, response: NextApiResponse) => {
     if (!decoded.sub?.includes(contact.userId)) {
       return response
         .status(401)
-        .json({ message: "Contact does not belong to your list." });
+        .json({ message: "Contact not found." });
     }
 
     const method = request.method;

@@ -23,7 +23,7 @@ async function signIn(request: NextApiRequest, response: NextApiResponse) {
       return response.status(200).json({ token });
     }
   }
-  return response.status(400).json({ message: "Incorrect email or password" });
+  return response.status(400).json({ message: "Incorrect email or password." });
 }
 
 export default signIn;

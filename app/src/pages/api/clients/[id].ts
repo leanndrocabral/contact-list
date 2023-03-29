@@ -46,7 +46,7 @@ const contactId = async (request: NextApiRequest, response: NextApiResponse) => 
     }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      return response.status(404).json({ message: "Not found user." });
+      return response.status(404).json({ message: "Client not found." });
     }
     return response.status(500).json({ message: "Internal server error." });
   }

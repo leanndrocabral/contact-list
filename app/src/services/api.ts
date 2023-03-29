@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const apiRequest = axios.create({
-  baseURL: "https://projeto-fullstack.vercel.app/api",
+  baseURL: "http://localhost:3000/api",
 });
