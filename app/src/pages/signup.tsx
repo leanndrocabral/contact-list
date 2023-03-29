@@ -62,7 +62,7 @@ const SignUp = () => {
         display="flex"
         alignItems="center"
         background="#FFFFFF"
-        marginY={["32px", "0px"]}
+        paddingY={["20px", "0px"]}
       >
         <Box
           margin="auto"

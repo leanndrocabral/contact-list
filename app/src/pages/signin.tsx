@@ -60,6 +60,7 @@ const SignIn = () => {
         display="flex"
         justifyContent="center"
         background="#FFFFFF"
+        paddingY={["20px", "0px"]}
       >
         <Box
           margin="auto"
