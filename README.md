@@ -9,7 +9,7 @@ Este é o backend da aplicação Projeto FullStack API para gerenciamento de cli
 <br/>
 
 <p align = "center">
-A URL base é `https://projeto-fullstack.vercel.app/api`
+A URL base é https://projeto-fullstack.vercel.app/api
 </p>
 
 <br/>
