@@ -1,59 +1,55 @@
-import jwt, { decode, JwtPayload } from "jsonwebtoken";
-import { prisma } from "../../../database/database";
-import exclude from "../../../utils/exclude";
-import { Client, Prisma } from "@prisma/client";
+import { hash } from "bcryptjs";
+import { Prisma } from "@prisma/client";
+import { decode, JwtPayload } from "jsonwebtoken";
+import { database } from "../../../database/database";
+import { verifyToken } from "../../../utils/verifyToken";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (request: NextApiRequest, response: NextApiResponse) => {
+const contactId = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
-    const { method, body, query, headers } = request;
+    const token = request.headers.authorization!.split(" ")[1];
+    verifyToken(token, response);
 
-    const token = headers.authorization!.split(" ")[1];
-    const id = query.id!.toString();
-
-    jwt.verify(token, process.env.SECRET_KEY as string, (error) => {
-      if (error) {
-        return response.status(401).json({ message: error.message });
-      }
+    const client = await database.client.findFirstOrThrow({
+      where: { id: request.query.id as string },
+      select: database.$exclude("client", ["password"]),
     });
 
     const decoded = decode(token) as JwtPayload;
-    const user = (await prisma.client.findFirstOrThrow({
-      where: { id },
-    })) as Client;
-
-    if (decoded.sub !== user.id) {
+    if (!decoded.sub?.includes(client.id)) {
       return response
         .status(401)
         .json({ message: "No permission to access another user." });
     }
 
+    const method = request.method;
+
     switch (method) {
       case "GET":
-        const userWithoutPassword = exclude(user, ["password"]);
-        return response.status(200).json(userWithoutPassword);
+        return response.status(200).json(client);
 
       case "PATCH":
-        const userUpdated = await prisma.client.update({
-          where: { id },
-          data: { ...body },
+        const password = await hash(request.body.password, 10);
+
+        const clientUpdated = await database.client.update({
+          data: { ...request.body, password },
+          where: { id: request.query.id as string },
+          select: database.$exclude("client", ["password"]),
         });
-        const userUpdatedWithoutPassword = exclude(userUpdated, ["password"]);
-        return response.status(200).json(userUpdatedWithoutPassword);
+        return response.status(200).json(clientUpdated);
 
       case "DELETE":
-        await prisma.client.delete({ where: { id } });
+        await database.client.delete({
+          where: { id: request.query.id as string },
+        });
         return response.status(204).end();
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Prisma.PrismaClientKnownRequestError:
-        return response.status(404).json({ message: "Not found user." });
-
-      case error instanceof Prisma.PrismaClientUnknownRequestError:
-        return response.status(500).json({ message: "Internal server error." });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return response.status(404).json({ message: "Not found user." });
     }
+    return response.status(500).json({ message: "Internal server error." });
   }
 };
 
-export default handler
+export default contactId;

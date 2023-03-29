@@ -1,58 +1,51 @@
-import jwt, { decode, JwtPayload } from "jsonwebtoken";
-import { prisma } from "../../../database/database";
-import { Contact, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { decode, JwtPayload } from "jsonwebtoken";
+import { database } from "../../../database/database";
+import { verifyToken } from "../../../utils/verifyToken";
 import type { NextApiRequest, NextApiResponse } from "next";
-import exclude from "../../../utils/exclude";
 
-const handler = async (request: NextApiRequest, response: NextApiResponse) => {
+const clientId = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
-    const { method, body, query, headers } = request;
+    const token = request.headers.authorization!.split(" ")[1];
+    verifyToken(token, response);
 
-    const token = headers.authorization!.split(" ")[1];
-    const id = query.id!.toString();
-
-    jwt.verify(token, process.env.SECRET_KEY as string, (error) => {
-      if (error) {
-        return response.status(401).json({ message: error.message });
-      }
+    const contact = await database.contact.findFirstOrThrow({
+      where: { id: request.query.id as string },
     });
+
     const decoded = decode(token) as JwtPayload;
-
-    const contact = (await prisma.contact.findFirstOrThrow({
-      where: { id },
-    })) as Contact;
-
-    if (decoded.sub !== contact.userId) {
+    if (!decoded.sub?.includes(contact.userId)) {
       return response
         .status(401)
         .json({ message: "Contact does not belong to your list." });
     }
+
+    const method = request.method;
 
     switch (method) {
       case "GET":
         return response.status(200).json(contact);
 
       case "PATCH":
-        const contactUpdated = await prisma.contact.update({
-          where: { id },
-          data: { ...body },
+        const updatedContact = await database.contact.update({
+          data: { ...request.body },
+          where: { id: request.query.id as string },
+          select: database.$exclude("contact", ["userId"]),
         });
-        const contactWithoutUserId = exclude(contactUpdated, ["userId"]);
-        return response.status(201).json(contactWithoutUserId);
+        return response.status(201).json(updatedContact);
 
       case "DELETE":
-        await prisma.contact.delete({ where: { id } });
+        await database.contact.delete({
+          where: { id: request.query.id as string },
+        });
         return response.status(204).end();
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Prisma.PrismaClientKnownRequestError:
-        return response.status(404).json({ message: "Contact not found." });
-
-      case error instanceof Prisma.PrismaClientUnknownRequestError:
-        return response.status(500).json({ message: "Internal server error." });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return response.status(404).json({ message: "Contact not found." });
     }
+    return response.status(500).json({ message: "Internal server error." });
   }
 };
 
-export default handler;
+export default clientId;

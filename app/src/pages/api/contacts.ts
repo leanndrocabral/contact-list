@@ -1,57 +1,36 @@
-import jwt, { decode, JwtPayload } from "jsonwebtoken";
-import { prisma } from "../../database/database";
-import type { NextApiRequest, NextApiResponse } from "next";
-import exclude from "../../utils/exclude";
 import { Prisma } from "@prisma/client";
+import { database } from "../../database/database";
+import { decode, JwtPayload } from "jsonwebtoken";
+import { verifyToken } from "../../utils/verifyToken";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (request: NextApiRequest, response: NextApiResponse) => {
+const contacts = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
-    const { method, body, headers } = request;
+    const token = request.headers.authorization!.split(" ")[1];
+    verifyToken(token, response);
 
-    const token = headers.authorization!.split(" ")[1];
-
-    jwt.verify(token, process.env.SECRET_KEY as string, (error) => {
-      if (error) {
-        return response.status(401).json({ message: error.message });
-      }
-    });
     const decoded = decode(token) as JwtPayload;
+    const method = request.method;
 
     switch (method) {
       case "POST":
-        const contact = await prisma.contact.create({
-          data: { ...body, userId: decoded.sub },
+        const contact = await database.contact.create({
+          data: { ...request.body, userId: decoded.sub },
+          select: database.$exclude("contact", ["userId"]),
         });
-        const contactWithoutUserId = exclude(contact, ["userId"]);
-        return response.status(201).json(contactWithoutUserId);
+        return response.status(201).json(contact);
 
       case "GET":
-        const contacts = await prisma.contact.findMany({
-          where: { userId: decoded.sub },
-          select: {
-            id: true,
-            fullName: true,
-            email: true,
-            telephone: true,
-            avatar: true,
-            registrationDate: true,
-          },
+        const contacts = await database.contact.findMany({
           orderBy: { fullName: "asc" },
+          where: { userId: decoded.sub },
+          select: database.$exclude("contact", ["userId"]),
         });
         return response.status(200).json(contacts);
     }
   } catch (error) {
-    if ((error instanceof Prisma.PrismaClientKnownRequestError) as unknown) {
-      if (error.meta.target.includes("email")) {
-        return response
-          .status(400)
-          .json({ message: "This email already exists in your contacts." });
-      }
-      return response
-        .status(400)
-        .json({ message: "This phone already exists in your contacts." });
-    }
+    return response.status(500).json({ message: "Internal server error." });
   }
 };
 
-export default handler;
+export default contacts;

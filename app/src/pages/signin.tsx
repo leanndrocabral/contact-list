@@ -20,9 +20,6 @@ import { LoginInput } from "../interfaces/frontend/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginClientSchema } from "../schemas/frontend/client";
 
-import { Inter } from "next/font/google";
-const inter = Inter({ subsets: ["latin"] });
-
 const SignIn = () => {
   const { push } = useRouter();
 
@@ -48,7 +45,7 @@ const SignIn = () => {
   });
 
   return (
-    <Box className={inter.className}>
+    <Box>
       <Box
         w="100%"
         h="100vh"

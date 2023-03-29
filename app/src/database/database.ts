@@ -1,3 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from "@prisma/client";
+import { withExclude } from "prisma-exclude";
 
-export const prisma = new PrismaClient()
+export const database = withExclude(new PrismaClient());

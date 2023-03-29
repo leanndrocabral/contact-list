@@ -9,12 +9,11 @@ import {
   Img,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import exclude from "../utils/exclude";
 import InputMask from "react-input-mask";
 import imageLogin from "../public/imgs/signup.jpg";
 
 import { useRouter } from "next/router";
-import { Inter } from "next/font/google";
+import { excludeKeys } from "filter-obj";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
 import { notifyError } from "../utils/toast";
@@ -22,21 +21,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createClientSchema } from "../schemas/frontend/client";
 import { CreateClientInput } from "../interfaces/frontend/interfaces";
 
-const inter = Inter({ subsets: ["latin"] });
-
 const SignUp = () => {
   const { push } = useRouter();
 
   const createClient = async (payload: CreateClientInput) => {
     try {
-      const { firstName, lastName } = payload;
-      const client = {
-        ...payload,
-        fullName: `${firstName} ${lastName}`,
-      };
+      const fullName = payload.firstName + " " + payload.lastName;
+      Object.assign(payload, { fullName: fullName });
 
-      const formattedUser = exclude(client, ["firstName", "lastName"]);
-      await apiRequest.post("/clients", formattedUser);
+      const client = excludeKeys(payload, ["firstName", "lastName"]);
+      await apiRequest.post("/clients", client);
 
       push("/signin");
     } catch (error) {
@@ -58,7 +52,7 @@ const SignUp = () => {
   });
 
   return (
-    <Box className={inter.className}>
+    <Box>
       <Box
         w="100%"
         h="100vh"
@@ -160,8 +154,8 @@ const SignUp = () => {
 
             <Box>
               <Input
-                mask="+55 (**) *****-****"
                 as={InputMask}
+                mask="+55 (**) *****-****"
                 id="telephone"
                 type="text"
                 placeholder="Telefone"

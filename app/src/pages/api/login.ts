@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken";
 import { compare } from "bcryptjs";
-import { prisma } from "../../database/database";;
+import { database } from "../../database/database";
 import { Client } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 async function handler(request: NextApiRequest, response: NextApiResponse) {
   const { password, email } = request.body;
 
-  const user = (await prisma.client.findFirst({ where: { email } })) as Client;
+  const user = (await database.client.findFirst({ where: { email } })) as Client;
 
   if (user) {
     const passCompare = await compare(password, user.password);

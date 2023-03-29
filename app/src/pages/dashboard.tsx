@@ -13,14 +13,13 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import exclude from "../utils/exclude";
 import InputMask from "react-input-mask";
 import ModalAvatars from "../components/avatarmodal";
 import ContactsList from "../components/contactslist";
 
 import { decode } from "jsonwebtoken";
 import { useRouter } from "next/router";
-import { Inter } from "next/font/google";
+import { excludeKeys } from "filter-obj";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
 import { GetServerSideProps } from "next/types";
@@ -28,12 +27,10 @@ import { AuthContext } from "../contexts/authcontext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { destroyCookie, parseCookies } from "nookies";
 import { useContext, useEffect, useState } from "react";
-import { createContactSchema } from "../schemas/frontend/contact";
 import { notifySuccess, notifyError } from "../utils/toast";
+import { createContactSchema } from "../schemas/frontend/contact";
 import { CreateContactInput } from "../interfaces/frontend/interfaces";
 import { Contact, DashboardProps } from "../interfaces/frontend/interfaces";
-
-const inter = Inter({ subsets: ["latin"] });
 
 const Dashboard = ({ client, contacts }: DashboardProps) => {
   const { push } = useRouter();
@@ -48,7 +45,6 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
   }, [setContactsList, contacts]);
 
   const createContact = async (payload: CreateContactInput) => {
-    
     try {
       reset({
         firstName: "",
@@ -62,15 +58,12 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
 
       apiRequest.defaults.headers.authorization = `Bearer ${token}`;
 
-      const { firstName, lastName } = payload;
-      const contact = {
-        ...payload,
-        avatar,
-        fullName: `${firstName} ${lastName}`,
-      };
+      const fullName = payload.firstName + " " + payload.lastName;
+      Object.assign(payload, { fullName: fullName, avatar });
 
-      const formattedContact = exclude(contact, ["firstName", "lastName"]);
-      const response = await apiRequest.post("/contacts", formattedContact);
+      const contact = excludeKeys(payload, ["firstName", "lastName"]);
+      const response = await apiRequest.post("/contacts", contact);
+
       notifySuccess("Contato criado.");
 
       const listContacts = [...contactsList, response.data];
@@ -84,6 +77,7 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
         return 0;
       });
       setContactsList(orderedList);
+
       onClose();
     } catch {
       notifyError("Algo deu errado ao criar o contato.");
@@ -115,7 +109,7 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
   });
 
   return (
-    <Box className={inter.className}>
+    <Box>
       <Box w="100%" h="100vh" display="flex" justifyContent="center">
         <Box
           w={["100%", "100%", "553px"]}
@@ -180,7 +174,7 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
 
           <ContactsList
             values={
-              filteredContacts.length > 0 ? filteredContacts : contactsList 
+              filteredContacts.length > 0 ? filteredContacts : contactsList
             }
           />
 

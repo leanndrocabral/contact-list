@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import {
   createClientApiSchema,
   updateClientApiSchema,
@@ -8,9 +6,12 @@ import {
   createContactApiSchema,
   updateContactApiSchema,
 } from "./schemas/backend/contact";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { ZodError } from "./interfaces/backend/interfaces";
 
 export default async function middleware(request: NextRequest) {
+
   try {
     const url = request.nextUrl.pathname;
     const urls: string[] = ["/signin", "/signup"];
@@ -71,8 +72,6 @@ export default async function middleware(request: NextRequest) {
       }
     }
   } catch (error){
-    console.log(error);
-    
     return NextResponse.json(
       { message: "Internal server error." },
       { status: 500 }
@@ -105,7 +104,7 @@ export default async function middleware(request: NextRequest) {
         { status: 401 }
       );
     }
-  } catch {
+  } catch (error) {
     return NextResponse.json(
       { message: "Internal server error." },
       { status: 500 }

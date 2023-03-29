@@ -20,25 +20,26 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import exclude from "../utils/exclude";
 import ModalImages from "./avatarmodal";
 import InputMask from "react-input-mask";
 
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { parseCookies } from "nookies";
-import { Client } from "@prisma/client";
-import { useForm } from "react-hook-form";
-import { useContext, useState } from "react";
-import { apiRequest } from "../services/api";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthContext } from "../contexts/authcontext";
-import { updateContactSchema } from "../schemas/frontend/contact";
-import { notifySuccess, notifyError } from "../utils/toast";
 import {
   ContactListProps,
   Contact,
   UpdateContactInput,
 } from "../interfaces/frontend/interfaces";
+
+import { parseCookies } from "nookies";
+import { Client } from "@prisma/client";
+import { excludeKeys } from "filter-obj";
+import { useForm } from "react-hook-form";
+import { apiRequest } from "../services/api";
+import { useContext, useState } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AuthContext } from "../contexts/authcontext";
+import { notifySuccess, notifyError } from "../utils/toast";
+import { updateContactSchema } from "../schemas/frontend/contact";
 
 const ContactsList = ({ values }: ContactListProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,21 +65,19 @@ const ContactsList = ({ values }: ContactListProps) => {
     try {
       apiRequest.defaults.headers.authorization = `Bearer ${token}`;
 
-      const { firstName, lastName } = payload;
-      const updatedContact = {
-        ...payload,
-        avatar,
-        fullName: `${firstName} ${lastName}`,
-      };
+      const fullName = payload.firstName + " " + payload.lastName;
+      Object.assign(payload, { fullName: fullName, avatar });
 
-      const formattedContact = exclude(updatedContact, [
+      const contactWithFullName = excludeKeys(payload, [
         "firstName",
         "lastName",
       ]);
+
       const response = await apiRequest.patch(
         `/contacts/${contact!.id}`,
-        formattedContact
+        contactWithFullName
       );
+
       notifySuccess("Contato editado.");
 
       const index = contactsList.findIndex(
@@ -120,7 +119,7 @@ const ContactsList = ({ values }: ContactListProps) => {
       firstName: contact?.fullName.split(" ")[0] as string,
       lastName: contact?.fullName.split(" ")[1] as string,
       email: contact?.email as string,
-      telephone: contact?.telephone as string
+      telephone: contact?.telephone as string,
     },
   });
 
