@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+
 import { compare } from "bcryptjs";
 import { Client } from "@prisma/client";
 import { database } from "../../database/database";

@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { database } from "../../database/database";
 import { decode, JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../../utils/verifyToken";
