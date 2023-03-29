@@ -1,13 +1,15 @@
 import jwt from "jsonwebtoken";
 import { compare } from "bcryptjs";
-import { database } from "../../database/database";
 import { Client } from "@prisma/client";
+import { database } from "../../database/database";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function signIn(request: NextApiRequest, response: NextApiResponse) {
   const { password, email } = request.body;
 
-  const user = (await database.client.findFirst({ where: { email } })) as Client;
+  const user = (await database.client.findFirst({
+    where: { email },
+  })) as Client;
 
   if (user) {
     const passCompare = await compare(password, user.password);
@@ -23,4 +25,4 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
   return response.status(400).json({ message: "Incorrect email or password" });
 }
 
-export default handler;
+export default signIn;

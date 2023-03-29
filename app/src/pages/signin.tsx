@@ -27,7 +27,7 @@ const SignIn = () => {
     try {
       await notifyPromisse(
         async () => {
-          const response = await apiRequest.post("/login", data);
+          const response = await apiRequest.post("/signin", data);
 
           setCookie(null, "_clientToken", response.data.token, {
             path: "/",
