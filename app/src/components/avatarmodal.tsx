@@ -12,11 +12,11 @@ import {
   UnorderedList,
 } from "@chakra-ui/react";
 import { useContext } from "react";
-import { AuthContext } from "../contexts/authcontext";
+import { ContactContext } from "../contexts/contactcontext";
 
 const ModalImages = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setAvatar, avatar } = useContext(AuthContext);
+  const { setAvatar, avatar } = useContext(ContactContext);
 
   return (
     <Box cursor="pointer">
@@ -70,62 +70,152 @@ const ModalImages = () => {
                   li: { listStyle: "none " },
                 }}
               >
-                <ListItem onClick={onClose}>
+                <ListItem onClick={onClose} cursor="pointer">
                   <Img
                     minW="80px"
                     h="80px"
                     borderRadius="50%"
-                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-glasses-half-shaved-head_23-2149436187.jpg?t=st=1679854579~exp=1679855179~hmac=14be8e9c6daf563365c8cff4beff5e61c191f1a6ef63af60ac4b0d10a9c87d5a"
+                    src="https://img.freepik.com/free-psd/3d-illustration-business-man-with-glasses_23-2149436194.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
                     onClick={(event) => setAvatar(event.currentTarget.src)}
                   />
                 </ListItem>
 
-                <ListItem onClick={onClose}>
+                <ListItem onClick={onClose} cursor="pointer">
                   <Img
                     minW="80px"
                     h="80px"
                     borderRadius="50%"
-                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses-green-hair_23-2149436201.jpg"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
                     onClick={(event) => setAvatar(event.currentTarget.src)}
                   />
                 </ListItem>
 
-                <ListItem onClick={onClose}>
+                <ListItem onClick={onClose} cursor="pointer">
                   <Img
                     minW="80px"
                     h="80px"
                     borderRadius="50%"
-                    src="https://img.freepik.com/premium-psd/3d-illustration-business-man-with-glasses_23-2149436193.jpg"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-glasses_23-2149436189.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
                     onClick={(event) => setAvatar(event.currentTarget.src)}
                   />
                 </ListItem>
 
-                <ListItem onClick={onClose}>
+                <ListItem onClick={onClose} cursor="pointer">
                   <Img
                     minW="80px"
                     h="80px"
                     borderRadius="50%"
-                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-pink-hair_23-2149436186.jpg"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-pink-hair_23-2149436186.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
                     onClick={(event) => setAvatar(event.currentTarget.src)}
                   />
                 </ListItem>
 
-                <ListItem onClick={onClose}>
+                <ListItem onClick={onClose} cursor="pointer">
                   <Img
                     minW="80px"
                     h="80px"
                     borderRadius="50%"
-                    src="https://img.freepik.com/free-psd/3d-illustration-person_23-2149436179.jpg?t=st=1679854469~exp=1679855069~hmac=696698ef412ae8f7f6b8c6fa3a94cb060b296e6ff45126282615a46a69f24ad6"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person_23-2149436179.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
                     onClick={(event) => setAvatar(event.currentTarget.src)}
                   />
                 </ListItem>
 
-                <ListItem onClick={onClose}>
+                <ListItem onClick={onClose} cursor="pointer">
                   <Img
                     minW="80px"
                     h="80px"
                     borderRadius="50%"
-                    src="https://img.freepik.com/premium-psd/3d-illustration-person-with-glasses-bow_23-2149436205.jpg"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-glasses-half-shaved-head_23-2149436187.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-tank-top_23-2149436202.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/premium-psd/3d-illustration-person-with-purple-hair-glasses_23-2149436204.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses-green-hair_23-2149436201.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/premium-psd/3d-illustration-person-with-glasses-bow_23-2149436205.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-punk-hair-jacket_23-2149436198.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person_23-2149436192.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/free-psd/3d-illustration-bald-person-with-glasses_23-2149436184.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/free-psd/3d-illustration-bald-person_23-2149436183.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
+                    onClick={(event) => setAvatar(event.currentTarget.src)}
+                  />
+                </ListItem>
+
+                <ListItem onClick={onClose} cursor="pointer">
+                  <Img
+                    minW="80px"
+                    h="80px"
+                    borderRadius="50%"
+                    src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436178.jpg?size=626&ext=jpg&ga=GA1.1.50583708.1679764524"
                     onClick={(event) => setAvatar(event.currentTarget.src)}
                   />
                 </ListItem>

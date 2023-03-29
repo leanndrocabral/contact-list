@@ -1,25 +1,26 @@
-import { Flip, toast,  } from "react-toastify";
+import { Flip, toast } from "react-toastify";
 
-export const notifyError = (message: string) =>
-  toast.error(message, {
-    theme: "light",
-    pauseOnHover: false,
-    hideProgressBar: true,
-    autoClose: 1000,
-    toastId: "customId",
-    transition: Flip,
-    closeButton: false,
-    position: "top-center",
-  });
-
-  export const notifySuccess = (message: string) =>
-  toast.success(message, {
-    theme: "light",
-    pauseOnHover: false,
-    hideProgressBar: true,
-    autoClose: 1000,
-    toastId: "customId",
-    transition: Flip,
-    closeButton: false,
-    position: "top-center",
-  });
+export const notifyPromisse = (
+  request: Function,
+  pending: string,
+  success: string,
+  error: string
+) =>
+  toast.promise(
+    request(),
+    {
+      pending: pending,
+      success: success,
+      error: error,
+    },
+    {
+      theme: "light",
+      pauseOnHover: false,
+      hideProgressBar: true,
+      autoClose: 1000,
+      toastId: "customId",
+      transition: Flip,
+      closeButton: false,
+      position: "top-center",
+    }
+  );

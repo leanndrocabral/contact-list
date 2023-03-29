@@ -30,33 +30,29 @@ import {
 } from "../interfaces/frontend/interfaces";
 
 import { parseCookies } from "nookies";
-import { Client } from "@prisma/client";
 import { excludeKeys } from "filter-obj";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
 import { useContext, useState } from "react";
+import { notifyPromisse } from "../utils/toast";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthContext } from "../contexts/authcontext";
-import { notifySuccess, notifyError } from "../utils/toast";
+import { ContactContext } from "../contexts/contactcontext";
 import { updateContactSchema } from "../schemas/frontend/contact";
 
 const ContactsList = ({ values }: ContactListProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { setAvatar, avatar, setContactsList, contactsList } =
-    useContext(AuthContext);
-  const [contact, setContact] = useState<Client | null>(null);
+    useContext(ContactContext);
+  const [contact, setContact] = useState<Contact | null>(null);
 
   const cookies = parseCookies();
   const token = cookies._clientToken;
 
-  const getContact = async (id: string) => {
-    apiRequest.defaults.headers.authorization = `Bearer ${token}`;
-    const response = await apiRequest.get(`/contacts/${id}`);
-
-    setContact(response.data);
-    setAvatar(response.data.avatar);
+  const getContact = async (contact: Contact) => {
+    setAvatar(contact.avatar);
+    setContact(contact);
 
     onOpen();
   };
@@ -73,22 +69,27 @@ const ContactsList = ({ values }: ContactListProps) => {
         "lastName",
       ]);
 
-      const response = await apiRequest.patch(
-        `/contacts/${contact!.id}`,
-        contactWithFullName
-      );
+      await notifyPromisse(
+        async () => {
+          const response = await apiRequest.patch(
+            `/contacts/${contact!.id}`,
+            contactWithFullName
+          );
 
-      notifySuccess("Contato editado.");
-
-      const index = contactsList.findIndex(
-        (element) => element.id === contact!.id
+          const index = contactsList.findIndex(
+            (element) => element.id === contact!.id
+          );
+          contactsList.splice(index, 1, response.data);
+          setContactsList(contactsList);
+        },
+        "Validando dados.",
+        "Contato editado.",
+        "Algo deu errado ao atualizar contato."
       );
-      contactsList.splice(index, 1, response.data);
-      setContactsList(contactsList);
 
       onClose();
-    } catch {
-      notifyError("Algo deu errado ao atualizar o contato.");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -96,16 +97,22 @@ const ContactsList = ({ values }: ContactListProps) => {
     try {
       apiRequest.defaults.headers.authorization = `Bearer ${token}`;
 
-      await apiRequest.delete(`/contacts/${id}`);
-      notifySuccess("Contato excluido.");
+      await notifyPromisse(
+        async () => {
+          await apiRequest.delete(`/contacts/${id}`);
+        },
+        "Excluindo contato.",
+        "Contato excluido.",
+        "Algo deu errado ao excluir contato."
+      );
 
       const index = contactsList.findIndex((element) => element.id === id);
       const contactsListCopy = contactsList.slice();
       contactsListCopy.splice(index, 1);
 
       setContactsList(contactsListCopy);
-    } catch {
-      notifyError("Algo deu errado ao excluir o contato.");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -191,7 +198,7 @@ const ContactsList = ({ values }: ContactListProps) => {
                       <MenuItem
                         fontSize={["14px", "16px"]}
                         onClick={() => {
-                          getContact(contact.id);
+                          getContact(contact);
                         }}
                       >
                         Editar

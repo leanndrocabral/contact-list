@@ -23,11 +23,11 @@ import { excludeKeys } from "filter-obj";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
 import { GetServerSideProps } from "next/types";
-import { AuthContext } from "../contexts/authcontext";
+import { notifyPromisse } from "../utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { destroyCookie, parseCookies } from "nookies";
 import { useContext, useEffect, useState } from "react";
-import { notifySuccess, notifyError } from "../utils/toast";
+import { ContactContext } from "../contexts/contactcontext";
 import { createContactSchema } from "../schemas/frontend/contact";
 import { CreateContactInput } from "../interfaces/frontend/interfaces";
 import { Contact, DashboardProps } from "../interfaces/frontend/interfaces";
@@ -37,7 +37,8 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { avatar, contactsList, setContactsList } = useContext(AuthContext);
+  const { defaultAvatar, setAvatar, avatar, contactsList, setContactsList } =
+    useContext(ContactContext);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
 
   useEffect(() => {
@@ -46,13 +47,6 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
 
   const createContact = async (payload: CreateContactInput) => {
     try {
-      reset({
-        firstName: "",
-        lastName: "",
-        email: "",
-        telephone: "",
-      });
-
       const cookies = parseCookies();
       const token = cookies._clientToken;
 
@@ -62,25 +56,32 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
       Object.assign(payload, { fullName: fullName, avatar });
 
       const contact = excludeKeys(payload, ["firstName", "lastName"]);
-      const response = await apiRequest.post("/contacts", contact);
 
-      notifySuccess("Contato criado.");
+      await notifyPromisse(
+        async () => {
+          const response = await apiRequest.post("/contacts", contact);
 
-      const listContacts = [...contactsList, response.data];
-      const orderedList = listContacts.sort((a, b) => {
-        if (a.fullName < b.fullName) {
-          return -1;
-        }
-        if (a.fullName > b.fullName) {
-          return 1;
-        }
-        return 0;
-      });
-      setContactsList(orderedList);
+          const listContacts = [...contactsList, response.data];
+
+          const orderedList = listContacts.sort((a, b) => {
+            if (a.fullName < b.fullName) {
+              return -1;
+            }
+            if (a.fullName > b.fullName) {
+              return 1;
+            }
+            return 0;
+          });
+          setContactsList(orderedList);
+        },
+        "Validando dados.",
+        "Contato criado.",
+        "Algo deu errado ao criar o contato."
+      );
 
       onClose();
-    } catch {
-      notifyError("Algo deu errado ao criar o contato.");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -89,7 +90,7 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
     push("/signin");
   };
 
-  const filterContacts = ({ value }: HTMLInputElement) => {
+  const filterContacts = (value: string) => {
     const inputValue: string = value.toLowerCase().trim();
 
     setFilteredContacts(
@@ -102,7 +103,6 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<CreateContactInput>({
     resolver: zodResolver(createContactSchema),
@@ -159,7 +159,7 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
             </Box>
 
             <Input
-              onChange={(event) => filterContacts(event.target)}
+              onChange={(event) => filterContacts(event.target.value)}
               placeholder="Procurar contatos"
               marginTop="20px"
               borderRadius={["4px", "6px"]}
@@ -182,7 +182,9 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
             w="90%"
             minH="46px"
             fontWeight="400"
-            onClick={onOpen}
+            onClick={() => {
+              onOpen(), setAvatar(defaultAvatar);
+            }}
             borderRadius={["8px", "10px"]}
             marginTop={["40px", "50px"]}
             marginBottom={["40px", "50px"]}

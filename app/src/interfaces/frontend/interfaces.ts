@@ -5,6 +5,7 @@ export interface ContextProps {
 }
 
 export interface Context {
+  defaultAvatar: string;
   avatar: string;
   setAvatar: Dispatch<SetStateAction<string>>;
   contactsList: Contact[];

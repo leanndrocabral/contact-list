@@ -12,12 +12,12 @@ import {
 import signin from "../public/imgs/signin.jpg";
 
 import { setCookie } from "nookies";
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { notifyError } from "../utils/toast";
+import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
-import { LoginInput } from "../interfaces/frontend/interfaces";
+import { notifyPromisse } from "../utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginInput } from "../interfaces/frontend/interfaces";
 import { loginClientSchema } from "../schemas/frontend/client";
 
 const SignIn = () => {
@@ -25,14 +25,22 @@ const SignIn = () => {
 
   const clientLogin = async (data: LoginInput) => {
     try {
-      const response = await apiRequest.post("/login", data);
+      await notifyPromisse(
+        async () => {
+          const response = await apiRequest.post("/login", data);
 
-      setCookie(null, "_clientToken", response.data.token, {
-        path: "/",
-      });
+          setCookie(null, "_clientToken", response.data.token, {
+            path: "/",
+          });
+        },
+        "validando dados.",
+        "Entrando.",
+        "Senha ou e-mail incorretos."
+      );
+
       push("/dashboard");
-    } catch {
-      notifyError("Senha ou e-mail incorreto.");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -50,11 +58,11 @@ const SignIn = () => {
         w="100%"
         h="100vh"
         display="flex"
-        alignItems="center"
         justifyContent="center"
         background="#FFFFFF"
       >
         <Box
+          margin="auto"
           display="flex"
           flexDirection="column"
           alignItems="center"

@@ -16,7 +16,7 @@ import { useRouter } from "next/router";
 import { excludeKeys } from "filter-obj";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "../services/api";
-import { notifyError } from "../utils/toast";
+import { notifyPromisse } from "../utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClientSchema } from "../schemas/frontend/client";
 import { CreateClientInput } from "../interfaces/frontend/interfaces";
@@ -30,16 +30,19 @@ const SignUp = () => {
       Object.assign(payload, { fullName: fullName });
 
       const client = excludeKeys(payload, ["firstName", "lastName"]);
-      await apiRequest.post("/clients", client);
+
+      await notifyPromisse(
+        async () => {
+          await apiRequest.post("/clients", client);
+        },
+        "Validando dados.",
+        "Cliente criado.",
+        "E-mail ou número de telefone já está em uso."
+      );
 
       push("/signin");
     } catch (error) {
-      const errors = error.response.data;
-
-      if (errors.message.includes("email")) {
-        notifyError("Este e-mail já está em uso.");
-      }
-      notifyError("Este telefone já está em uso.");
+      console.error(error);
     }
   };
 
@@ -58,10 +61,11 @@ const SignUp = () => {
         h="100vh"
         display="flex"
         alignItems="center"
-        justifyContent="center"
         background="#FFFFFF"
+        marginY={["32px", "0px"]}
       >
         <Box
+          margin="auto"
           display="flex"
           flexDirection="column"
           alignItems="center"
