@@ -6,6 +6,12 @@
 Este é o backend da aplicação Projeto FullStack API para gerenciamento de clientes e contatos.
 </p>
 
+> A URL base é:
+
+```
+https://projeto-fullstack.vercel.app/api
+```
+
 <h2 align ='center'>Clientes (Endpoints)</h2>
 
 ## **Rotas Sem Autenticação**
@@ -20,10 +26,10 @@ Observação: O campo "telephone" precisa ter o formato +55 (00) 00000-0000
 
 ```json
 {
-    "fullName": "Tobey Maguire",
-    "email": "tobey@mail.com",
-    "password": "12345678",
-    "telephone": "+55 (11) 40028-9220"
+  "fullName": "Tobey Maguire",
+  "email": "tobey@mail.com",
+  "password": "12345678",
+  "telephone": "+55 (11) 40028-9220"
 }
 ```
 
@@ -33,11 +39,11 @@ Caso dê tudo certo, a resposta será assim:
 
 ```json
 {
-    "id": "084ed168-0b89-4766-987f-631821f183d0",
-    "fullName": "Tobey Maguire",
-    "email": "tobey@mail.com",
-    "telephone": "+55 (11) 40028-9220",
-    "registrationDate": "2023-03-29T21:15:38.794Z"
+  "id": "084ed168-0b89-4766-987f-631821f183d0",
+  "fullName": "Tobey Maguire",
+  "email": "tobey@mail.com",
+  "telephone": "+55 (11) 40028-9220",
+  "registrationDate": "2023-03-29T21:15:38.794Z"
 }
 ```
 
@@ -181,11 +187,11 @@ Após o cliente estar logado, ele deve conseguir adicionar novos contatos a sua 
 
 ```json
 {
-    "id": "084ed168-0b89-4766-987f-631821f183d0",
-    "fullName": "Tobey Maguire",
-    "email": "tobey@mail.com",
-    "telephone": "+55 (11) 40028-9220",
-    "registrationDate": "2023-03-29T21:15:38.794Z"
+  "id": "084ed168-0b89-4766-987f-631821f183d0",
+  "fullName": "Tobey Maguire",
+  "email": "tobey@mail.com",
+  "telephone": "+55 (11) 40028-9220",
+  "registrationDate": "2023-03-29T21:15:38.794Z"
 }
 ```
 
@@ -207,11 +213,11 @@ Caso dê tudo certo, a resposta será assim:
 
 ```json
 {
-    "id": "084ed168-0b89-4766-987f-631821f183d0",
-    "fullName": "Tobey Maguire",
-    "email": "tobeymaguire@mail.com",
-    "telephone": "+55 (11) 40028-9220",
-    "registrationDate": "2023-03-29T21:15:38.794Z"
+  "id": "084ed168-0b89-4766-987f-631821f183d0",
+  "fullName": "Tobey Maguire",
+  "email": "tobeymaguire@mail.com",
+  "telephone": "+55 (11) 40028-9220",
+  "registrationDate": "2023-03-29T21:15:38.794Z"
 }
 ```
 
@@ -270,10 +276,10 @@ Caso dê um erro de campo irá retornar o seguinte erro:
 
 ```json
 {
-    "fullName": "Tio Ben",
-    "email": "benjamin@mail.com",
-    "telephone": "+55 (11) 40028-9221",
-    "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
+  "fullName": "Tio Ben",
+  "email": "benjamin@mail.com",
+  "telephone": "+55 (11) 40028-9221",
+  "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg"
 }
 ```
 
@@ -283,12 +289,12 @@ Caso dê tudo certo, a resposta será assim:
 
 ```json
 {
-    "id": "453dbe05-82ec-466d-9591-00468b0bf652",
-    "fullName": "Tio Ben",
-    "email": "benjamin@mail.com",
-    "telephone": "+55 (11) 40028-9221",
-    "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
-    "registrationDate": "2023-03-29T21:15:38.794Z"
+  "id": "453dbe05-82ec-466d-9591-00468b0bf652",
+  "fullName": "Tio Ben",
+  "email": "benjamin@mail.com",
+  "telephone": "+55 (11) 40028-9221",
+  "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
+  "registrationDate": "2023-03-29T21:15:38.794Z"
 }
 ```
 
@@ -349,22 +355,22 @@ Caso dê um erro de campo irá retornar o seguinte erro:
 
 ```json
 [
-    {
-        "id": "453dbe05-82ec-466d-9591-00468b0bf652",
-        "fullName": "Tio Ben",
-        "email": "benjamin@mail.com",
-        "telephone": "+55 (11) 40028-9221",
-        "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
-        "registrationDate": "2023-03-29T21:15:38.794Z"
-    },
-    {
-        "id": "d0d5fc5c-1b40-4b1b-9782-097da9461646",
-        "fullName": "Tia May",
-        "email": "tiamay@mail.com",
-        "telephone": "+55 (11) 40028-9222",
-        "avatar": "https://www.tenhomaisdiscosqueamigos.com/wp-content/uploads/2019/10/a-ha-take-on-me-clipe.jpg",
-        "registrationDate": "2023-03-29T21:15:38.794Z"
-    }
+  {
+    "id": "453dbe05-82ec-466d-9591-00468b0bf652",
+    "fullName": "Tio Ben",
+    "email": "benjamin@mail.com",
+    "telephone": "+55 (11) 40028-9221",
+    "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
+    "registrationDate": "2023-03-29T21:15:38.794Z"
+  },
+  {
+    "id": "d0d5fc5c-1b40-4b1b-9782-097da9461646",
+    "fullName": "Tia May",
+    "email": "tiamay@mail.com",
+    "telephone": "+55 (11) 40028-9222",
+    "avatar": "https://www.tenhomaisdiscosqueamigos.com/wp-content/uploads/2019/10/a-ha-take-on-me-clipe.jpg",
+    "registrationDate": "2023-03-29T21:15:38.794Z"
+  }
 ]
 ```
 
@@ -376,12 +382,12 @@ Caso dê um erro de campo irá retornar o seguinte erro:
 
 ```json
 {
-    "id": "453dbe05-82ec-466d-9591-00468b0bf652",
-    "fullName": "Tio Ben",
-    "email": "benjamin@mail.com",
-    "telephone": "+55 (11) 40028-9221",
-    "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
-    "registrationDate": "2023-03-29T21:15:38.794Z"
+  "id": "453dbe05-82ec-466d-9591-00468b0bf652",
+  "fullName": "Tio Ben",
+  "email": "benjamin@mail.com",
+  "telephone": "+55 (11) 40028-9221",
+  "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
+  "registrationDate": "2023-03-29T21:15:38.794Z"
 }
 ```
 
@@ -404,12 +410,12 @@ Caso dê um erro de campo irá retornar o seguinte erro:
 
 ```json
 {
-    "id": "453dbe05-82ec-466d-9591-00468b0bf652",
-    "fullName": "Benjamin Parker",
-    "email": "benparker@mail.com",
-    "telephone": "+55 (11) 40028-9221",
-    "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
-    "registrationDate": "2023-03-29T21:15:38.794Z"
+  "id": "453dbe05-82ec-466d-9591-00468b0bf652",
+  "fullName": "Benjamin Parker",
+  "email": "benparker@mail.com",
+  "telephone": "+55 (11) 40028-9221",
+  "avatar": "https://static.onecms.io/wp-content/uploads/sites/6/2015/10/a-ha-take-on-me.jpg",
+  "registrationDate": "2023-03-29T21:15:38.794Z"
 }
 ```
 
