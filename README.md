@@ -1,5 +1,5 @@
 <h2 align="center" style='font-family: sans-serif'>
-	Api Projeto FullStack
+	API Projeto FullStack
 </h2>
 
 <p align = "center">

@@ -47,6 +47,13 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
 
   const createContact = async (payload: CreateContactInput) => {
     try {
+      reset({
+        firstName: "",
+        lastName: "",
+        email: "",
+        telephone: "",
+      });
+
       const cookies = parseCookies();
       const token = cookies._clientToken;
 
@@ -101,6 +108,7 @@ const Dashboard = ({ client, contacts }: DashboardProps) => {
   };
 
   const {
+    reset,
     register,
     handleSubmit,
     formState: { errors },
