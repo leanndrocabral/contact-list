@@ -1,4 +1,37 @@
 <h2 align="center" style='font-family: sans-serif'>
+	Inicialização
+</h2>
+
+<p align = "center">
+Passo a passo de como inicializar o projeto.
+</p>
+
+<br/>
+
+<h2
+ align = "center">
+Iniciar projeto
+</h2>
+
+<br/>
+
+```bash
+# Clone o repositório
+$ git clone https://github.com/leanndrocabral/projeto-fullstack.git
+
+# Acesse
+$ cd app
+
+# Instale as dependências
+$ npm install
+
+# Inicie o projeto
+$ npm run dev
+```
+
+<br/>
+
+<h2 align="center" style='font-family: sans-serif'>
 	API Projeto FullStack
 </h2>
 
