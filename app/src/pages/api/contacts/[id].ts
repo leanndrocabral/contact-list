@@ -32,7 +32,7 @@ const clientId = async (request: NextApiRequest, response: NextApiResponse) => {
           where: { id: request.query.id as string },
           select: database.$exclude("contact", ["userId"]),
         });
-        return response.status(201).json(updatedContact);
+        return response.status(200).json(updatedContact);
 
       case "DELETE":
         await database.contact.delete({
