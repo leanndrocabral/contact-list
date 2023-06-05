@@ -1,5 +1,6 @@
 import axios from "axios";
+import "dotenv/config";
 
 export const apiRequest = axios.create({
-  baseURL: "https://listadecontatospage.vercel.app/api",
+  baseURL: "https://listadeconntatos.vercel.app/api",
 });
