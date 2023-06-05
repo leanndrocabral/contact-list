@@ -17,7 +17,7 @@ Iniciar projeto
 
 ```bash
 # Clone o repositório
-$ git clone https://github.com/leanndrocabral/projeto-fullstack.git
+$ git clone https://github.com/leanndrocabral/contact-list-nextjs
 
 # Acesse
 $ cd app
