@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const apiRequest = axios.create({
-  baseURL: "https://listadeconntatos.vercel.app/api"
+  baseURL: "https://conntactlist.vercel.app/api"
 });
