@@ -10,7 +10,7 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import InputMask from "react-input-mask";
-import imageLogin from "../public/imgs/signup.jpg";
+import imageLogin from "../assets/images/signup.jpg";
 
 import { useRouter } from "next/router";
 import { excludeKeys } from "filter-obj";

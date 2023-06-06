@@ -9,7 +9,7 @@ import {
   Img,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import signin from "../public/imgs/signin.jpg";
+import signin from "../assets/images/signin.jpg";
 
 import { setCookie } from "nookies";
 import { useRouter } from "next/router";
