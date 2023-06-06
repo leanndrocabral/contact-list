@@ -11,6 +11,9 @@ import type { NextRequest } from "next/server";
 import { ZodError } from "./interfaces/backend/interfaces";
 
 export default async function middleware(request: NextRequest) {
+  if (request.method.includes("OPTIONS")) {
+    return NextResponse.json({}, { status: 200 });
+  }
 
   try {
     const url = request.nextUrl.pathname;
@@ -20,8 +23,9 @@ export default async function middleware(request: NextRequest) {
 
     if (urls.includes(url) && token) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
-      
-    } else if (url.includes("/dashboard") && !token) {
+    }
+
+    if (url.includes("/dashboard") && !token) {
       return NextResponse.redirect(new URL("/signin", request.url));
     }
   } catch {
@@ -33,7 +37,7 @@ export default async function middleware(request: NextRequest) {
 
   try {
     const url = request.nextUrl.pathname;
-    
+
     if (url.includes("/api/clients") && request.method.includes("POST")) {
       const paylaod = await request.json();
       const validate: ZodError = createClientApiSchema.safeParse(paylaod);
@@ -41,10 +45,9 @@ export default async function middleware(request: NextRequest) {
       if (!validate.success) {
         return NextResponse.json({ message: validate }, { status: 400 });
       }
-    } else if (
-      url.includes("/api/clients/") &&
-      request.method.includes("PATCH")
-    ) {
+    }
+
+    if (url.includes("/api/clients/") && request.method.includes("PATCH")) {
       const paylaod = await request.json();
       const validate: ZodError = updateClientApiSchema.safeParse(paylaod);
 
@@ -60,10 +63,9 @@ export default async function middleware(request: NextRequest) {
       if (!validate.success) {
         return NextResponse.json({ message: validate }, { status: 400 });
       }
-    } else if (
-      url.includes("/api/contacts/") &&
-      request.method.includes("PATCH")
-    ) {
+    }
+
+    if (url.includes("/api/contacts/") && request.method.includes("PATCH")) {
       const paylaod = await request.json();
       const validate: ZodError = updateContactApiSchema.safeParse(paylaod);
 
@@ -71,7 +73,7 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.json({ message: validate }, { status: 400 });
       }
     }
-  } catch (error){
+  } catch (error) {
     return NextResponse.json(
       { message: "Internal server error." },
       { status: 500 }
@@ -94,11 +96,13 @@ export default async function middleware(request: NextRequest) {
 
     if (urls[0].includes(url) && request.method.includes("POST")) {
       return NextResponse.next();
+    }
 
-    } else if (urls.includes(url) && authToken) {
+    if (urls.includes(url) && authToken) {
       return NextResponse.next();
+    }
 
-    } else if (urls.includes(url) && !authToken) {
+    if (urls.includes(url) && !authToken) {
       return NextResponse.json(
         { message: "A token is required." },
         { status: 401 }
