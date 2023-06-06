@@ -5,8 +5,6 @@ import { verifyToken } from "../../utils/verifyToken";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const clients = async (request: NextApiRequest, response: NextApiResponse) => {
-  response.setHeader("Access-Control-Allow-Origin", "*");
-  
   try {
     const method = request.method;
 

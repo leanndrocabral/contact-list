@@ -5,8 +5,6 @@ import { verifyToken } from "../../../utils/verifyToken";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const clientId = async (request: NextApiRequest, response: NextApiResponse) => {
-  response.setHeader("Access-Control-Allow-Origin", "*");
-  
   try {
     const token = request.headers.authorization!.split(" ")[1];
     verifyToken(token, response);
