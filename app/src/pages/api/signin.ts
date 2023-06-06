@@ -6,6 +6,7 @@ import { database } from "../../database/database";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 async function signIn(request: NextApiRequest, response: NextApiResponse) {
+  response.setHeader("Access-Control-Allow-Origin", "*");
   const { password, email } = request.body;
 
   const user = (await database.client.findFirst({

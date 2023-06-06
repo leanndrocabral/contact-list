@@ -5,6 +5,8 @@ import { verifyToken } from "../../utils/verifyToken";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const clients = async (request: NextApiRequest, response: NextApiResponse) => {
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  
   try {
     const method = request.method;
 
@@ -30,12 +32,10 @@ const clients = async (request: NextApiRequest, response: NextApiResponse) => {
     }
   } catch (error) {
     if ((error instanceof Prisma.PrismaClientKnownRequestError) as unknown) {
-
       if (error.meta.target.includes("email")) {
         return response
           .status(409)
           .json({ message: "This email is already in use." });
-
       } else if (error.meta.target.includes("telephone")) {
         return response
           .status(409)
