@@ -17,7 +17,7 @@ Iniciar projeto
 
 ```bash
 # Clone o repositório
-$ git clone https://github.com/leanndrocabral/contact-list-nextjs.git
+$ git clone https://github.com/leanndrocabral/contact-list.git
 
 # Acesse
 $ cd app
@@ -42,7 +42,7 @@ Este é o backend da aplicação Projeto FullStack API para gerenciamento de cli
 <br/>
 
 <p align = "center">
-A URL base é https://projeto-fullstack.vercel.app/api
+A URL base é https://conntactlist.vercel.app/api
 </p>
 
 <br/>
